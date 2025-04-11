@@ -1,4 +1,4 @@
-Written by Diamond Andy, Lily Gates, Mia Leandri, Colin Thompsom  
+Written by Diamond Andy, Lily Gates, Mia Leandri, and Colin Thompsom  
 University of Maryland, Spring 2025
 
 ## Description
