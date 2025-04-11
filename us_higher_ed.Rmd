@@ -1,0 +1,77 @@
+---
+title: "us_higher_ed"
+output: html_document
+name: Diamond Andy, Lily Gates, Mia Leandri, Colin Thompson
+date: 04/10/2025
+---
+# Overview of Project
+
+## Research Question/Topic
+**How do universities compare with the type and amount of research publications?**
+  - Academic fields (humanities vs. STEM)
+  - Public vs. Private
+  - R1 vs. R2
+  - Prediction on new policies may affect universities
+  - How it may affect admission, funding, research publications etc.
+  
+## Key Questions:
+  - How does the number and type of research publications differ between humanities and STEM fields?
+  - What is the relationship between a university’s classification (public/private, R1/R2) and its research output?
+  - How might changes in policies regarding funding, research priorities, or admissions affect these relationships?
+
+## Data and Research Sources
+**Sources**
+*1. Carnegie Classification of Institutions of Higher Education*
+  - Classification of R1 vs. R2 Schools
+*2. Integrated Postsecondary Education Data System (IPEDS)* 
+  - Includes data on U.S. universities
+  
+**Data Collection**
+  - Number and type of publications (e.g., STEM vs. humanities).
+  - Institutional classification (Public vs. Private, R1 vs. R2).
+  - Funding and admission data.
+  - Information on new or proposed policies affecting research funding, publication incentives, or admissions.
+
+-----------------------------------------------
+# Importing Libraries
+```{r}
+library(tidyverse)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(lubridate)  # for Datetime formatting
+library(stringr)  # for extracting URL
+```
+
+# Reading in Data
+```{r}
+file_name <- read_csv("file_name.csv")
+```
+
+# Cleaning and Filtering Data
+```{r}
+
+```
+
+# Bar Chart to Compare Publications by Type
+  * Across different University classifications
+```{r}
+
+```
+
+# Scatter Plot to Examine Relationships Between Funding and Publications
+  * Across different University classifications
+```{r}
+
+```
+
+# Line Plot to Measure Changes in ___ Overtime
+```{r}
+
+```
+
+# Heatmap to Visualize Correlations Between Policy Changes and Outcomes (e.g., admissions, research output, funding)
+```{r}
+
+```
+
