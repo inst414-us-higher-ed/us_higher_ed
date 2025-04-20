@@ -179,6 +179,17 @@ print(missing_data)
   * Description about what variables you are measuring
   * ~3 sentence summary about visualization
 ```{r}
+#Name: Number of Institutions by Research Classification 2021
+combined_df_na %>%
+  count(classific_2021) %>%
+  ggplot(aes(x = classific_2021, y = n, fill = classific_2021)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Number of Institutions by Research Classification (2021)",
+       x = "Classification", y = "Number of Institutions") +
+  theme_minimal()
+
+#This bar graph represents the number of institutions that were categorized under the 2021 Carnegie research classification tier. Comparing how many universities fall into each group and highlights the overall distribution of research in U.S. Institutions. This visualization also helps emphasize the tiers that are less common.
+
 
 ```
 
