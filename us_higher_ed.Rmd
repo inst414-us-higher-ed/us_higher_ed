@@ -2,37 +2,45 @@
 title: "us_higher_ed"
 output: html_document
 name: Diamond Andy, Lily Gates, Mia Leandri, Colin Thompson
-date: 04/10/2025
+date: 04/20/2025
 ---
-# Overview of Project
+-----------------------------------------------
+# PROJECT OVERVIEW
+-----------------------------------------------
+
+# Description of Project
+Exploring the differences between American research colleges and universities through data visualization.
 
 ## Research Question/Topic
-**How do universities compare with the type and amount of research publications?**
-  - Academic fields (humanities vs. STEM)
-  - Public vs. Private
-  - R1 vs. R2
-  - Prediction on new policies may affect universities
-  - How it may affect admission, funding, research publications etc.
-  
-## Key Questions:
-  - How does the number and type of research publications differ between humanities and STEM fields?
-  - What is the relationship between a university’s classification (public/private, R1/R2) and its research output?
-  - How might changes in policies regarding funding, research priorities, or admissions affect these relationships?
+1. Descriptive and Comparative Question
+**How do different tiered American research colleges and universities compare in terms of location, admissions, academic offerings, doctoral degrees awarded, and other institutional characteristics?**
+
+2. Analytical and Inferential Question
+**How do other institutional characteristics, besides financial expenditures, predict or correlate with research designation tiers among American colleges and universities?**
 
 ## Data and Research Sources
-**Sources**
-*1. Carnegie Classification of Institutions of Higher Education*
-  - Classification of R1 vs. R2 Schools
-*2. Integrated Postsecondary Education Data System (IPEDS)* 
-  - Includes data on U.S. universities
-  
-**Data Collection**
-  - Number and type of publications (e.g., STEM vs. humanities).
-  - Institutional classification (Public vs. Private, R1 vs. R2).
-  - Funding and admission data.
-  - Information on new or proposed policies affecting research funding, publication incentives, or admissions.
+`carnegie_spending_doctorate_awards`
+(See c`arnegie_research_activity_desig_factsheet.pdf` for more info)
+* School
+* Location (City, State)
+* Classification (R1, R2, Other) — From 2021 and 2025
+* Expenses (2021, 2022, 2023)
+* Research Doctorates Awarded (2020, 2021, 2022)
+
+`carnegie_classification_stats`
+(See `carnegie_variable_descr_flowchart.pdf` for more info)
+* School
+    * Filtering main school if applicable (e.g., UMBC, UMD, UMES all are “University of Maryland” sub schools)
+* Location (City, State, residential or not)
+* Public or private (non-profit, for-profit)
+* Description of types of degree programs offered
+* Enrollment information
+* Classification on tier (R1, R2, Other)
 
 -----------------------------------------------
+# CODE BEGINS
+-----------------------------------------------
+
 # Importing Libraries
 ```{r}
 library(tidyverse)
@@ -45,33 +53,97 @@ library(stringr)  # for extracting URL
 
 # Reading in Data
 ```{r}
-file_name <- read_csv("file_name.csv")
+classification_stats <- read_csv("carnegie_classification_stats - CLEAN.csv")
+
+spending_doctorate_awards <- read_csv("carnegie_spending_doctorate_awards - CLEAN.csv")
 ```
 
-# Cleaning and Filtering Data
+# Preview and Summarize Data
+```{r}
+#head(classification_stats)
+colnames(classification_stats)
+summary(classification_stats)
+
+head(spending_doctorate_awards)
+colnames(spending_doctorate_awards)
+summary(spending_doctorate_awards)
+```
+
+------------------------------------------------------
+# CREATING DATAFRAMES
+------------------------------------------------------
+
+# Convert Both Imported CSVs to Dataframes
+```{r}
+classification_df <- data.frame(classification_stats)
+class(classification_df)
+
+spending_df <- data.frame(spending_doctorate_awards)
+class(spending_df)
+```
+
+```{r}
+# Connfirming column names on what to join by
+colnames(classification_df)
+colnames(spending_df)
+```
+
+# Combine Both into Single Dataframe
+# Note: has name.x and name.y
+- This is because the `classification_df` and `spending_df` both have "name" but it was raising an error: "Error: unexpected symbol" for that column when trying to do a full join
+
+```{r}
+combined_df <- full_join(classification_df, spending_df, by = c("unitid", "city", "state"))
+
+summary(combined_df)
+colnames(combined_df)
+
+```
+
+------------------------------------------------------
+# CLEANING DATA
+------------------------------------------------------
+
+# Cleaning Data -- Fill missing values with "NA"
+```{r}
+# Fill missing values with "NA"
+combined_df_filled <- combined_df %>% mutate(across(.cols = everything(), .fns = function(x) ifelse(is.na(x), NA, x)))
+#summary(combined_df_filled)
+```
+
+# Cleaning Data -- Find differences for "name" columns
+## NOTE:
+  `name.x` is from the `name` column from the `classified_df`
+  `name.y` is from the `name` column from the `spending_df`
+
+```{r}
+names_from_classified <- combined_df_filled['name.x']
+names_from_spending <- combined_df_filled['name.y']
+```
+
+```{r}
+# Calculates TRUE, FLASE, or NAs if values in Names are equal
+summary(combined_df_filled['name.x'] == combined_df_filled['name.y'])
+```
+
+```{r}
+# Dataframe that contains the mismatched names and NA names (There are 16)
+names_not_equal <- combined_df_filled[combined_df_filled['name.x'] != combined_df_filled['name.y'], ]
+
+# Prints the University IDs, name.x and name.y of mismatched and NA school names
+print(names_not_equal[c('unitid', 'name.x', 'name.y')])
+
+```
+
+------------------------------------------------------
+# VISUALIZATIONS
+------------------------------------------------------
+
+# Visualization Name (e.g., Line plot of Research Expenses from 2020 to 2023)
+  * Description about what variables you are measuring
+  * ~3 sentence summary about visualization
 ```{r}
 
 ```
 
-# Bar Chart to Compare Publications by Type
-  * Across different University classifications
-```{r}
-
-```
-
-# Scatter Plot to Examine Relationships Between Funding and Publications
-  * Across different University classifications
-```{r}
-
-```
-
-# Line Plot to Measure Changes in ___ Overtime
-```{r}
-
-```
-
-# Heatmap to Visualize Correlations Between Policy Changes and Outcomes (e.g., admissions, research output, funding)
-```{r}
-
-```
 
