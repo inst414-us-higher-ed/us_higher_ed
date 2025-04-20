@@ -36,6 +36,7 @@ Variables:
 2. `carnegie_spending_doctorate_awards`
 
 Original data from: https://carnegieclassifications.acenet.edu/carnegie-classification/research-designations/
+
 Variables:
 * School information
 * Research classification from 2021 and 2025
