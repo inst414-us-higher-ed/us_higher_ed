@@ -7,7 +7,6 @@ date: 04/20/2025
 -----------------------------------------------
 # PROJECT OVERVIEW
 -----------------------------------------------
-
 # Description of Project
 Exploring the differences between American research colleges and universities through data visualization.
 
