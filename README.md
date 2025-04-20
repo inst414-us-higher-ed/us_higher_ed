@@ -130,7 +130,7 @@ orig from `classficiation_df`
 measured by the percentage of bachelor's degrees awarded in arts and sciences (rather than professions)
     - *graduate degree coexistence*:
 percentage of graduate degrees in undergraduate fields
-        - e.g., a BS in Computer Science AND a MS or PHD in Computer Science is also offered at the same school)
+        - e.g., a BS in Computer Science AND a MS or PHD in Computer Science is also offered at the same school
         - measured by "none" (0%) OR "some" (0 to 50%) or "high" (greater than 50%)
 - `grad_program` - distribution of grad degrees in certain academic fields
     - *program level*: undergrad only, postbac, research doctorate, NULL
