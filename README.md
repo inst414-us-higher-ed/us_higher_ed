@@ -53,6 +53,7 @@ NAME
 - `unitid` - unique ID number
 - `name.x` - name of school
     - orig from `classification_df`
+    - NOTE: is later renamed to `name` while `name.y` is dropped
 - `name.y` - name
     - orig from `spending_df`
 - `core_name` - name of the main university (e.g., "University of Maryland")

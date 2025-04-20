@@ -82,7 +82,7 @@ class(spending_df)
 ```
 
 ```{r}
-# Connfirming column names on what to join by
+# Confirming column names on what to join by
 colnames(classification_df)
 colnames(spending_df)
 ```
@@ -92,46 +92,83 @@ colnames(spending_df)
 - This is because the `classification_df` and `spending_df` both have "name" but it was raising an error: "Error: unexpected symbol" for that column when trying to do a full join
 
 ```{r}
-combined_df <- full_join(classification_df, spending_df, by = c("unitid", "city", "state"))
+# Perform full join on 'unitid'
+combined_df <- full_join(classification_df, spending_df, by = "unitid")
 
-summary(combined_df)
+# Confirm join and notice duplicate column names
 colnames(combined_df)
-
 ```
 
 ------------------------------------------------------
 # CLEANING DATA
 ------------------------------------------------------
 
-# Cleaning Data -- Fill missing values with "NA"
+# Debugging - Checking for Duplicate Values in Duplicate Column Names
+(name, city, state each have x and y values)
+The `.x` refers to the column coming from `classification_df`
+The `.y` refers to the column coming from `spending_df`
+
 ```{r}
-# Fill missing values with "NA"
-combined_df_filled <- combined_df %>% mutate(across(.cols = everything(), .fns = function(x) ifelse(is.na(x), NA, x)))
-#summary(combined_df_filled)
+# Duplicate School Names (there are 12)
+combined_df %>%
+  filter(name.x != name.y) %>%
+  select(unitid, name.x, name.y)
+
+# Duplicate City Names (there is 1, 'Des Moines' and 'West Des Moines')
+combined_df %>%
+  filter(city.x != city.y ) %>%
+  select(unitid, city.x, city.y)
+
+# Duplicate State Names (there are no duplicates)
+combined_df %>%
+  filter(state.x != state.y) %>%
+  select(unitid, state.x, state.y)
+
+# Create a new dataframe for mismatched rows
+mismatched <- combined_df %>%
+  filter(name.x != name.y | city.x != city.y | state.x != state.y) %>%
+  select(unitid, name.x, name.y, city.x, city.y, state.x, state.y)
+
+# View the mismatched rows
+print(mismatched)
+
 ```
 
-# Cleaning Data -- Find differences for "name" columns
-## NOTE:
-  `name.x` is from the `name` column from the `classified_df`
-  `name.y` is from the `name` column from the `spending_df`
-
+# Cleaning Data -- Fill any missing values with "NA"
 ```{r}
-names_from_classified <- combined_df_filled['name.x']
-names_from_spending <- combined_df_filled['name.y']
+# Function to replace NULL with NA
+
+replace_null_with_na <- function(x) {
+  if (is.list(x)) {
+    # Apply recursively if it's a list (to handle nested data frames)
+    return(lapply(x, replace_null_with_na))
+  } else if (is.null(x)) {
+    return(NA)  # Replace NULL with NA
+  } else {
+    return(x)  # Otherwise, return the value unchanged
+  }
+}
+
+# Use it to apply to a data frame
+combined_df_na <- combined_df %>%
+  mutate(across(everything(), replace_null_with_na))
+
+# View the result
+summary(combined_df_na)
 ```
 
-```{r}
-# Calculates TRUE, FLASE, or NAs if values in Names are equal
-summary(combined_df_filled['name.x'] == combined_df_filled['name.y'])
-```
+# Debugging - Checking which columns have missing values (NA)
+Note:
+`spec_name` may have many values and that is okay, it is optional
+(e.g., University of Maryland, College Park would have "College Park" as the spec_name", but John's Hopkins only has one campus, so there is no "main campus" or any other special name)
 
 ```{r}
-# Dataframe that contains the mismatched names and NA names (There are 16)
-names_not_equal <- combined_df_filled[combined_df_filled['name.x'] != combined_df_filled['name.y'], ]
+# Display a table of the count of missing values (NAs) per column
+missing_data <- combined_df_na %>% 
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  gather(key = "column_name", value = "NAs")
 
-# Prints the University IDs, name.x and name.y of mismatched and NA school names
-print(names_not_equal[c('unitid', 'name.x', 'name.y')])
-
+print(missing_data)
 ```
 
 ------------------------------------------------------
