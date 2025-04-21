@@ -198,7 +198,6 @@ combined_df_na %>%
   labs(title = "Number of Institutions by Research Classification (2021)",
        x = "Classification", y = "Number of Institutions") +
   theme_minimal()
-
 ```
 
 # Research Activity Designations (2025)
