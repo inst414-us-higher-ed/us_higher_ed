@@ -358,3 +358,115 @@ ggplot(clean_df_long, aes(x = academic_year, y = num_doc_degrees, fill = researc
     expand = c(0, 0)
   )
 ```
+
+# Total Enrollment by Research Tier 
+# By Mia Leandri 
+This compares the distribution of total student enrollment across different research tiers — showing the range, median, and variability. It supports your descriptive & comparative question by examining institutional size as a characteristic.
+ 
+```{r}
+# Calculate average admissions rate by research tier
+
+clean_df_long <- combined_df %>%
+  group_by(academic_year) %>%
+  mutate(total_degrees = sum(num_doc_degrees)) %>%
+  ungroup()
+
+avg_admissions <- clean_df_long %>%
+  group_by(research_tier_2025) %>%
+  summarize(mean_admissions_rate = mean(admissions_rate, na.rm = TRUE))
+
+# Plot the average admissions rate by research tier
+ggplot(avg_admissions, aes(x = reorder(research_tier_2025, -mean_admissions_rate), 
+                           y = mean_admissions_rate, 
+                           fill = research_tier_2025)) +
+  geom_col(width = 0.6) +
+  labs(
+    title = "Average Undergraduate Admissions Rate by Research Tier",
+    x = "Research Tier",
+    y = "Average Admissions Rate (%)",
+    fill = "Research Tier"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(size = 10)
+  )
+
+# Define custom colors for each research tier
+tier_colors <- c(
+  "Research 1 (R1)" = "#1f77b4",   # blue
+  "Research 2 (R2)" = "#ff7f0e",   # orange
+  "Research Colleges and Universities" = "#2ca02c"  # green
+)
+
+# Boxplot of total enrollment by research tier with color
+ggplot(clean_df_long, aes(x = research_tier_2025, y = total_enrollment, fill = research_tier_2025)) +
+  geom_boxplot(alpha = 0.8, outlier.color = "gray50", outlier.shape = 16) +
+  scale_fill_manual(values = tier_colors) +
+  labs(
+    title = "Distribution of Total Enrollment by Research Tier",
+    x = "Research Tier",
+    y = "Total Enrollment",
+    fill = "Research Tier"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 10),
+    legend.position = "none"  # Hide legend if x-axis labels are descriptive
+  ) +
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+# Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
+# By Mia Leandri
+This scatter plot visualizes the relationship between average research spending (from FY2021 to FY2023) and the average number of doctoral degrees awarded (2020–2023) across American higher education institutions.
+
+The x-axis shows average research spending in U.S. dollars, while the y-axis indicates the average number of doctoral degrees conferred. Institutions with greater research spending tend to award more doctoral degrees, illustrating a positive correlation between institutional investment in research and doctoral productivity.
+
+This visualization supports the analytical research question by highlighting how non-financial institutional characteristics (like research tier) correlate with tangible research outcomes such as doctoral degree production.
+
+```{r}
+# install.packages("scales")
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+# Clean the spending column (remove $ and commas and convert to numeric)
+clean_df_long <- combined_df %>%
+  mutate(
+    herd_avg_fy21_to_fy23 = as.numeric(gsub("[$,]", "", herd_avg_fy21_to_fy23))
+  )
+
+# Optional: Rename tiers for cleaner display (if needed)
+clean_df_long <- clean_df_long %>%
+  mutate(research_tier_2025 = case_when(
+    grepl("Research 1", research_tier_2025) ~ "Research 1 (R1)",
+    grepl("Research 2", research_tier_2025) ~ "Research 2 (R2)",
+    TRUE ~ "Research Colleges and Universities"
+  ))
+
+# Scatter plot of research spending vs doctoral degrees
+ggplot(clean_df_long, aes(
+  x = herd_avg_fy21_to_fy23,
+  y = avg_num_doc_degrees_2020_2023,
+  color = research_tier_2025
+)) +
+  geom_point(alpha = 0.8, size = 3) +
+  scale_color_brewer(palette = "Set2") +
+  scale_x_continuous(labels = dollar_format()) +
+  labs(
+    title = "Avg. Research Spending vs. Doctoral Degrees (2020–2023)",
+    x = "Avg. Research Spending (FY21–FY23)",
+    y = "Avg. Number of Doctoral Degrees",
+    color = "Research Tier"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+```
