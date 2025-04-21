@@ -40,6 +40,13 @@ Exploring the differences between American research colleges and universities th
 # CODE BEGINS
 -----------------------------------------------
 
+# Installing Packages
+Note: Only have to do 1 time
+```{r}
+#install.packages("patchwork")
+```
+
+
 # Importing Libraries
 ```{r}
 library(tidyverse)
@@ -48,6 +55,7 @@ library(tidyr)
 library(dplyr)
 library(lubridate)  # for Datetime formatting
 library(stringr)  # for extracting URL
+library(patchwork)  # for putting multiple graphs on one fig
 ```
 
 # Reading in Data
@@ -175,11 +183,91 @@ print(missing_data)
 # VISUALIZATIONS
 ------------------------------------------------------
 
-# Visualization Name (e.g., Line plot of Research Expenses from 2020 to 2023)
+# Visualization Name (e.g., Research Expenses from 2020 to 2023)
   * Description about what variables you are measuring
   * ~3 sentence summary about visualization
+
+# Number of Institutions by Research Classification 2021
+# By Diamond
+This bar graph represents the number of institutions that were categorized under the 2021 Carnegie research classification tier. Comparing how many universities fall into each group and highlights the overall distribution of research in U.S. Institutions. This visualization also helps emphasize the tiers that are less common.
 ```{r}
+combined_df_na %>%
+  count(classific_2021) %>%
+  ggplot(aes(x = classific_2021, y = n, fill = classific_2021)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Number of Institutions by Research Classification (2021)",
+       x = "Classification", y = "Number of Institutions") +
+  theme_minimal()
 
 ```
 
+# Research Activity Designations (2025)
+# By Lily
+This graph visualizes the raw count and relative distribution of institutions by their research activity designation in 2025. The categories displayed include "Research Colleges and Universities", "Research 1", and "Research 2". Data excludes institutions without a research designation.
+
+The graph shows the both the raw count and relative distribution of institutions across three research activity categories: Research Colleges and Universities (RCA), Research 1 (R1), and Research 2 (R2).
+  - RCA institutions spend at least $2.5 million on research annually but do not meet the criteria for R1 or R2.
+  - R1 institutions spend at least $50 million on research and produce at least 70 research doctorates annually
+  - R2 institutions spend at least $5 million and produce at least 20 research doctorates.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+
+# Prepare the data and drop NA
+plot_data <- combined_df_na %>%
+  filter(!is.na(research_tier_2025)) %>%
+  mutate(
+    research_tier_2025 = factor(
+      research_tier_2025,
+      levels = c("Research Colleges and Universities",
+                 "Research 1: Very High Research Spending and Doctorate Production", 
+                 "Research 2: High Research Spending and Doctorate Production")
+    )
+  ) %>%
+  count(research_tier_2025) %>%
+  mutate(percentage = n / sum(n) * 100)  # Calculate percentage for pie chart
+
+# Raw count bar plot
+raw_count_plot <- ggplot(plot_data, aes(x = research_tier_2025, y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(
+    x = "Research Activity Designation",
+    y = "Raw Count"
+  ) +
+  theme_minimal() +
+  scale_x_discrete(labels = c(
+    "Research Colleges and Universities" = "Research Colleges\nand Universities", 
+    "Research 1: Very High Research Spending and Doctorate Production" = "R1", 
+    "Research 2: High Research Spending and Doctorate Production" = "R2"
+  ))
+
+# Proportional bar plot (percentage)
+proportional_plot <- ggplot(plot_data, aes(x = research_tier_2025, y = percentage)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  labs(
+    x = "Research Activity Designation",
+    y = "Proportion (%)"
+  ) +
+  theme_minimal() +
+  scale_x_discrete(labels = c(
+    "Research Colleges and Universities" = "Research Colleges\nand Universities", 
+    "Research 1: Very High Research Spending and Doctorate Production" = "R1", 
+    "Research 2: High Research Spending and Doctorate Production" = "R2"
+  ))
+
+# Combine the two plots and add a single title, subtitle, and caption for the whole figure
+combined_plot <- raw_count_plot + proportional_plot + 
+  plot_layout(guides = 'collect') +
+  plot_annotation(
+    title = "Raw Count and Proportion of Institutions by Research Activity Designation (2025)",
+    subtitle = "Excludes institutions without a research designation",
+    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
+  )
+
+# Print the combined plot
+combined_plot
+
+```
 
