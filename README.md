@@ -63,21 +63,21 @@ NAME
 
 SCHOOL TYPE 
 - `public_private_profit` - public, private (for-profit, non-profit)
-    - orig from `carnegie_classification_stat`
+    - orig from `classification_df`
 
 SCHOOL LOCATION
 - `city` - city
 - `state` - state abbreviation
 - `size_setting` - size, 4-year vs. graduate/professional, how residential the school is
-    - orig from `carnegie_classification_stats`
+    - orig from `classification_df`
 
 **Enrollment and Admissions**
 - `level` - four or more years as opposed to associate degree 2-year programs such as community colleges
-    - orig from `carnegie_classification_stats`
+    - orig from `classification_df`
 - `enrollment_profile` -  distribution of undergrad vs. graduate students
-    - orig from `carnegie_classification_stats`
+    - orig from `classification_df`
 - `size_setting` - student body population 
-    - orig from `carnegie_classification_stats`
+    - orig from `classification_df`
       - *size*:
         - very small (less than 999)
         - small (1000 to 2999)
@@ -88,7 +88,7 @@ SCHOOL LOCATION
         - primarily residential: 25 to 50% FT students
         - highly residential: more than 50% FT students
 - `undergrad_profile` - for 4-year universities
-    - orig from `carnegie_classification_stats`
+    - orig from `classification_df`
         - *full/part-time*:
             - higher part-time (over 40% PT)
             - medium-full-time (21-39% PT)
