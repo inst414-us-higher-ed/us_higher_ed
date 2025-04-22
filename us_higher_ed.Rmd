@@ -7,8 +7,14 @@ date: 04/20/2025
 -----------------------------------------------
 # PROJECT OVERVIEW
 -----------------------------------------------
-# Description of Project
+
+# Overview of Project
 Exploring the differences between American research colleges and universities through data visualization.
+
+-----------------------------------------------
+# RESEARCH QUESTIONS/TOPICS, AND NARRATIVE
+# Communications - Mia Leandri
+-----------------------------------------------
 
 ## Research Question/Topic
 1. Descriptive and Comparative Question
@@ -17,7 +23,22 @@ Exploring the differences between American research colleges and universities th
 2. Analytical and Inferential Question
 **How do other institutional characteristics, besides financial expenditures, predict or correlate with research designation tiers among American colleges and universities?**
 
-## Data and Research Sources
+## Research Narrative
+Our chosen datasets should be well-suited to address both our descriptive/comparative and analytical/inferential research questions. For descriptive and comparative purposes, we have access to data on most of the key factors we aim to explore, allowing us to describe and compare differences across universities. For instance, we can analyze the geographic distribution of institutions by state and city, admissions data on who is being admitted, academic offerings across universities, and the number of doctoral degrees awarded at each institution. By combining this information with institutional research spending data from the `carnegie_spending_doctorate_awards` dataset and basic school characteristics from `carnegie_classification_stats`, we can compare which factors may contribute to higher research spending across institutions.
+
+For our analytical and inferential questions, we can use the data in several ways to explore what factors—beyond financial expenditures—are associated with a higher research classification. For example, admissions and academic offerings data, when examined alongside research classifications, may help us determine whether specific academic or demographic characteristics play a role in an institution’s likelihood of achieving Research 1 or Research 2 status. This approach goes beyond simply examining research spending and instead investigates what factors may influence institutional research standing.
+
+Our primary audience includes college and university administrators. We hope this analysis will be especially useful for those seeking to understand which institutional characteristics are associated with higher research rankings. For instance, if institutions with more diverse admissions profiles or broader academic offerings tend to rank higher in research classifications, administrators at other institutions may consider incorporating similar changes. This information could support strategic planning and resource allocation to strengthen their institutions’ research profile.
+
+-----------------------------------------------
+# DATA AND RESEARCH SOURCES
+# Data Enginner - Colin Thompson
+-----------------------------------------------
+
+## Data and Research Sources Overview
+Cleaned CSV versions of the "Carnegie Classification of Institutions of Higher Education"
+https://carnegieclassifications.acenet.edu/
+
 `carnegie_spending_doctorate_awards`
 (See c`arnegie_research_activity_desig_factsheet.pdf` for more info)
 * School
@@ -36,6 +57,120 @@ Exploring the differences between American research colleges and universities th
 * Enrollment information
 * Classification on tier (R1, R2, Other)
 
+## Description of Variables
+* `classification_df` is from the `carnegie_classification_stats`
+* `spending_df` is from the `carnegie_spending_doctorate_awards`
+
+**Basic School Information**
+NAME
+- `unitid` - unique ID number
+- `name.x` - name of school
+    - orig from `classification_df`
+    - NOTE: is later renamed to `name` while `name.y` is dropped
+- `name.y` - name
+    - orig from `spending_df`
+- `core_name` - name of the main university (e.g., "University of Maryland")
+    - orig from the `classification_df`
+- `spec_name` - name of the specific campus/satellite (e.g., "College Park")
+    - orig from the `classification_df`
+
+SCHOOL TYPE 
+- `public_private_profit` - public, private (for-profit, non-profit)
+    - orig from `classification_df`
+
+SCHOOL LOCATION
+- `city` - city
+- `state` - state abbreviation
+- `size_setting` - size, 4-year vs. graduate/professional, how residential the school is
+    - orig from `classification_df`
+
+**Enrollment and Admissions**
+- `level` - four or more years as opposed to associate degree 2-year programs such as community colleges
+    - orig from `classification_df`
+- `enrollment_profile` -  distribution of undergrad vs. graduate students
+    - orig from `classification_df`
+- `size_setting` - student body population 
+    - orig from `classification_df`
+      - *size*:
+        - very small (less than 999)
+        - small (1000 to 2999)
+        - medium (3000 to 9999)
+        - large (10000 or greater)
+      - *residential*: percentage of living on-campus students
+        - primarily non-res: less than 25% FT students
+        - primarily residential: 25 to 50% FT students
+        - highly residential: more than 50% FT students
+- `undergrad_profile` - for 4-year universities
+    - orig from `classification_df`
+        - *full/part-time*:
+            - higher part-time (over 40% PT)
+            - medium-full-time (21-39% PT)
+            - full-time (less than 20% PT)
+      - *selective*:
+        - inclusive (ACT equivalent <19)
+        - more selective (ACT equivalent 19 to 23)
+        - selective (ACT equivalent over 23)
+      - *transfer in*:
+        - lower (<20%)
+        - higher (greater than 20%)
+
+**Research Classification Ranking**
+- `research_tier_2025` - 2025 tier ranking 
+    - orig from `classification_df`
+- `classific_2021` - 2021 tier ranking
+    - orig from `spending_df`
+- `classific_2025` - 2025 tier ranking
+    - orig from `spending_df`
+
+**Finances**  
+orig from `spending_df`
+- `herd_fy21` - 2021 fiscal year expenses on research
+- `herd_fy22` - 2022 fiscal year expenses on research
+- `herd_fy23` - 2023 fiscal year expenses on research
+- `herd_avg_fy21_to_fy23` - Average expenses on research from 2021 to 2023
+
+**Types of Academic Programs and Degrees Offered**  
+orig from `classficiation_df`
+- `degree_focuses` - degree level and academic focus overview
+    - *top degree level offered*: bacc, masters, doctoral, special, tribal
+    - *focus*: arts and science, diverse, engineering and tech, medical, other health, special focus, research, or NULL
+    - *size*: of program (only for Masters Universities)
+    - *research activity*: only for Doctoral Universities
+- `undergrad_program` - distribution of undergrad degrees in certain academic fields
+    - *dominant subj*:
+"arts and sciences" OR "professions" OR NULL
+    - *balanced vs plus vs focus*:
+measured by the percentage of bachelor's degrees awarded in arts and sciences (rather than professions)
+    - *graduate degree coexistence*:
+percentage of graduate degrees in undergraduate fields
+        - e.g., a BS in Computer Science AND a MS or PHD in Computer Science is also offered at the same school
+        - measured by "none" (0%) OR "some" (0 to 50%) or "high" (greater than 50%)
+- `grad_program` - distribution of grad degrees in certain academic fields
+    - *program level*: undergrad only, postbac, research doctorate, NULL
+    - *single or comprehensive*: multiple subject fields or single subject
+    - *focus*: education, business, humanities, STEM, professional
+      
+**Research Doctorates Awarded**  
+orig from  `spending_df`
+
+Number of doctoral research degrees conferred for...
+- `num_doc_degrees_2020_2021` - the 2020-2021 school year
+- `num_doc_degrees_2021_2022` - the 2021-2022 school year
+- `num_doc_degrees_2022_2023` - the 2022-2023 school year
+
+**Miscellaneous**  
+orig from `classification_df`  
+Not important, used for Carnegie's specific engagement and purposes, special program with Carnegie
+- `community_engage` - whether they were classified by Carnegie
+- `leadership_for_public_prax` - whether they were classified by Carnegie
+
+# Narrative Overview
+The datasets we intend to use for this project are `carnegie_classification_stats` and `carnegie_spending_doctorate_awards`, both sourced from the Carnegie Classification of Institutions of Higher Education—a framework maintained by the American Council on Education and the Carnegie Foundation for the Advancement of Teaching. The purpose of this classification system is to provide a standardized way of categorizing U.S. colleges and universities based on a range of institutional characteristics, including degree offerings, enrollment profiles, and research activity.
+
+The `carnegie_classification_stats` dataset includes a wide range of institutional data. It provides general school information such as the official name of the university and the name of specific campuses—e.g., the University of Maryland as the flagship institution and College Park as its campus. It also classifies institutions by their sector, indicating whether they are public, private non-profit, or private for-profit. Additional variables detail the types of degrees offered, from bachelor’s to doctoral levels, as well as the institution’s academic focus—such as liberal arts, professional fields, or STEM. The dataset includes enrollment profiles, offering insight into whether an institution primarily serves undergraduate or graduate students, and whether its student body is full-time, part-time, or transfer-heavy. It also captures information about the size of the institution, the residential setting, and undergraduate selectivity. Importantly, it includes the university's most recent research classification label (e.g., Research 1 or Research 2) as of 2025.
+
+The `carnegie_spending_doctorate_awards` dataset complements this information by including similar institutional identifiers and research classifications for 2021 and 2025. It also tracks financial data, reporting annual research expenses for fiscal years 2021 through 2023. This provides a window into how institutions allocate resources toward research over time. Additionally, this dataset documents the number of research doctorates awarded by each institution in three consecutive academic years: 2020–2021, 2021–2022, and 2022–2023. Together, these two datasets allow for a comprehensive analysis of how institutional characteristics, research activity, and academic program offerings intersect across the higher education landscape in the United States.
+
 -----------------------------------------------
 # CODE BEGINS
 -----------------------------------------------
@@ -44,6 +179,8 @@ Exploring the differences between American research colleges and universities th
 Note: Only have to do 1 time
 ```{r}
 #install.packages("patchwork")
+#install.packages("scales")
+
 ```
 
 
@@ -56,6 +193,8 @@ library(dplyr)
 library(lubridate)  # for Datetime formatting
 library(stringr)  # for extracting URL
 library(patchwork)  # for putting multiple graphs on one fig
+library(scales)
+
 ```
 
 # Reading in Data
@@ -177,6 +316,18 @@ missing_data <- combined_df_na %>%
   gather(key = "column_name", value = "NAs")
 
 print(missing_data)
+
+```
+
+```{r}
+# Filter rows where name.x or name.y is NA, and select unitid, name.x, name.y
+rows_with_na_names <- combined_df_na %>%
+  filter(is.na(name.x) | is.na(name.y)) %>%
+  select(unitid, name.x, name.y, city.x, city.y)
+
+print(rows_with_na_names)
+# Sould be referring to Penn State, with 2 different unitid AND different school name spelling
+
 ```
 
 ------------------------------------------------------
@@ -187,25 +338,159 @@ print(missing_data)
   * Description about what variables you are measuring
   * ~3 sentence summary about visualization
 
+------------------------------------------------------
+
 # Number of Institutions by Research Classification 2021
-# By Diamond
+# 2 Versions (Raw count and relative proportion)
+# By Diamond Andy
 This bar graph represents the number of institutions that were categorized under the 2021 Carnegie research classification tier. Comparing how many universities fall into each group and highlights the overall distribution of research in U.S. Institutions. This visualization also helps emphasize the tiers that are less common.
+
+# Filter and Assign Color Palette
 ```{r}
-combined_df_na %>%
-  count(classific_2021) %>%
-  ggplot(aes(x = classific_2021, y = n, fill = classific_2021)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Number of Institutions by Research Classification (2021)",
-       x = "Classification", y = "Number of Institutions") +
-  theme_minimal()
+# Recode main college type and subcategory
+combined_df_na_cleaned <- combined_df_na %>%
+  mutate(
+    college_type = case_when(
+      grepl("Baccalaureate Colleges", classific_2021) ~ "Baccalaureate",
+      grepl("Master's Colleges & Universities", classific_2021) ~ "Master's",
+      grepl("Doctoral Universities", classific_2021) ~ "Doctoral",
+      grepl("Tribal Colleges and Universities", classific_2021) ~ "Tribal",
+      grepl("Special Focus Four-Year", classific_2021) ~ "Special Focus",
+      TRUE ~ NA_character_
+    ),
+    subcategory = case_when(
+      grepl("Master's Colleges & Universities: Small Programs", classific_2021) ~ "Master's: Small Programs",
+      grepl("Master's Colleges & Universities: Medium Programs", classific_2021) ~ "Master's: Medium Programs",
+      grepl("Master's Colleges & Universities: Larger Programs", classific_2021) ~ "Master's: Larger Programs",
+      grepl("Doctoral Universities: High Research Activity", classific_2021) ~ "Doctoral: High Research Activity",
+      grepl("Doctoral Universities: Very High Research Activity", classific_2021) ~ "Doctoral: Very High Research Activity",
+      grepl("Doctoral/Professional Universities", classific_2021) ~ "Doctoral: Professional Universities",
+      grepl("Baccalaureate Colleges: Diverse Fields", classific_2021) ~ "Baccalaureate: Diverse Fields",
+      grepl("Baccalaureate Colleges: Arts & Sciences Focus", classific_2021) ~ "Baccalaureate: Arts & Sciences Focus",
+      grepl("Special Focus Four-Year: Research Institution", classific_2021) ~ "Special Focus: Research Institution",
+      grepl("Special Focus Four-Year: Other Health Professions Schools", classific_2021) ~ "Special Focus: Health Professions",
+      grepl("Special Focus Four-Year: Medical Schools & Centers", classific_2021) ~ "Special Focus: Medical Schools",
+      grepl("Special Focus Four-Year: Engineering and Other Technology-Related Schools", classific_2021) ~ "Special Focus: Engineering/Technology",
+      grepl("Special Focus Four-Year: Other Special Focus Institutions", classific_2021) ~ "Special Focus: Other Institutions",
+      grepl("Tribal Colleges and Universities", classific_2021) ~ "Tribal Colleges",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(college_type) & !is.na(subcategory))
+
+# Set factor levels for custom order of college_type
+combined_df_na_cleaned$college_type <- factor(combined_df_na_cleaned$college_type,
+  levels = c("Baccalaureate", "Master's", "Doctoral", "Special Focus", "Tribal")
+)
+
+# Set factor levels for custom order of subcategories
+combined_df_na_cleaned$subcategory <- factor(combined_df_na_cleaned$subcategory, levels = c(
+  "Baccalaureate: Diverse Fields",
+  "Baccalaureate: Arts & Sciences Focus",
+  "Master's: Small Programs",
+  "Master's: Medium Programs",
+  "Master's: Larger Programs",
+  "Doctoral: High Research Activity",
+  "Doctoral: Very High Research Activity",
+  "Doctoral: Professional Universities",
+  "Special Focus: Research Institution",
+  "Special Focus: Health Professions",
+  "Special Focus: Medical Schools",
+  "Special Focus: Engineering/Technology",
+  "Special Focus: Other Institutions",
+  "Tribal Colleges"
+))
+
+# Custom shaded color palette
+color_palette_shaded <- c(
+  # Reds for Baccalaureate
+  "Baccalaureate: Diverse Fields" = "#ff9999",
+  "Baccalaureate: Arts & Sciences Focus" = "#cc0000",
+  
+  # Oranges for Master's
+  "Master's: Small Programs" = "#ffcc99",
+  "Master's: Medium Programs" = "#ff9933",
+  "Master's: Larger Programs" = "#cc6600",
+  
+  # Blues for Doctoral
+  "Doctoral: High Research Activity" = "#99ccff",
+  "Doctoral: Very High Research Activity" = "#3399ff",
+  "Doctoral: Professional Universities" = "#003366",
+  
+  # Greens for Special Focus
+  "Special Focus: Research Institution" = "#b2d8b2",
+  "Special Focus: Health Professions" = "#66cc66",
+  "Special Focus: Medical Schools" = "#339966",
+  "Special Focus: Engineering/Technology" = "#26734d",
+  "Special Focus: Other Institutions" = "#145c33",
+  
+  # Purple for Tribal
+  "Tribal Colleges" = "#9966cc"
+)
+```
+
+# Raw Count of Institutions by College Type and Subcategory
+```{r}
+p1 <- ggplot(combined_df_na_cleaned, aes(x = college_type, fill = subcategory)) + 
+  geom_bar(position = "stack") +
+  scale_fill_manual(values = color_palette_shaded) +
+  labs(title = "Institution Counts by College Type and Subcategory",
+       x = "College Type", y = "Count of Institutions") +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.box = "horizontal",
+    legend.text = element_text(size = 10),
+    legend.key.size = unit(0.5, "cm"),
+    legend.box.just = "center",
+    legend.spacing.x = unit(0.5, 'cm'),
+    legend.spacing.y = unit(0.25, 'cm'),
+    legend.key.height = unit(0.5, "cm"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  guides(fill = guide_legend(ncol = 3, title = "Subcategory"))
+
+p1
 
 ```
 
---------------------------------------------
+# Relative Proportion of Institutions by College Type and Subcategory
+```{r}
+# Ensure college_type factor order is set (if not already done)
+combined_df_na_cleaned$college_type <- factor(combined_df_na_cleaned$college_type,
+  levels = c("Baccalaureate", "Master's", "Doctoral", "Special Focus", "Tribal")
+)
 
+# Proportion stacked bar plot (horizontal) with 4 columns for the legend
+p2 <- ggplot(combined_df_na_cleaned, aes(y = college_type, fill = subcategory)) + 
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    values = color_palette_shaded,
+    name = "Subcategory",  # Legend title
+    guide = guide_legend(ncol = 3, title.position = "top") 
+  ) +
+  labs(
+    title = "Proportion of Institutions by College Type and Subcategory",
+    x = "Proportion", 
+    y = "College Type"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(angle = 0),
+    legend.position = "bottom"
+  )
+
+# Print the plot
+p2
+
+```
+
+
+------------------------------------------------------
 
 # Research Activity Designations (2025)
-# By Lily
+# By Lily Gates
 This graph visualizes the raw count and relative distribution of institutions by their research activity designation in 2025. The categories displayed include "Research Colleges and Universities", "Research 1", and "Research 2". Data excludes institutions without a research designation.
 
 The graph shows the both the raw count and relative distribution of institutions across three research activity categories: Research Colleges and Universities (RCA), Research 1 (R1), and Research 2 (R2).
@@ -214,9 +499,6 @@ The graph shows the both the raw count and relative distribution of institutions
   - R2 institutions spend at least $5 million and produce at least 20 research doctorates.
 
 ```{r}
-library(ggplot2)
-library(dplyr)
-library(patchwork)
 
 # Prepare the data and drop NA
 plot_data <- combined_df_na %>%
@@ -274,10 +556,23 @@ combined_plot
 
 ```
 
---------------------------------------------
+```{r}
+ggplot(combined_df_na_cleaned, aes(y = college_type, fill = subcategory)) + 
+  geom_bar(position = "fill") +  # This scales the bars to 100% for each college type
+  scale_fill_manual(values = color_palette_shaded) +  # Apply the custom color palette
+  labs(title = "Proportional Counts by College Type and Subcategory",
+       x = "Proportion of Institutions",  # This will now show proportion
+       y = "College Type") +              # This will remain the college type
+  theme_minimal() +
+  theme(axis.text.y = element_text(angle = 0),    # Keep y-axis labels horizontal
+        axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
+
+```
+
+------------------------------------------------------
 
 # Average Doctoral Degrees by Research Tier (2020-2023)
-# By Lily
+# By Lily Gates
 This boxplot displays the distribution of average doctoral degrees awarded from 2020 to 2023 across three research activity designations: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The x-axis represents the average number of doctoral degrees awarded, while the y-axis categorizes institutions by their research tier. 
 
 The plot highlights the range, median, and quartiles for each research tier. Research Colleges and Universities, which are considered research-focused but do not meet the rigorous criteria for R1 or R2 designation, show a lower average number of doctoral degrees compared to R1 and R2 institutions. The "Research 1" and "Research 2" categories display higher and more variable averages, reflecting their very high and high research spending, respectively. This visualization provides insight into how research activity designation correlates with doctoral production.
@@ -312,46 +607,276 @@ ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025))
 
 ```
 
+------------------------------------------------------
 
+# Doctoral Degrees Conferred by Research Tier and Academic Year (2020-2023)
+# By Lily Gates
+This stacked bar graph visualizes the count of doctoral degrees conferred across different academic years (2020–2023), broken down by research tier. The research tiers are represented by three categories: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The bars for each academic year are stacked to show the distribution of doctoral degrees within each research tier, allowing for an understanding of how the number of degrees varies across tiers and over time. The y-axis represents the raw count of doctoral degrees, and the x-axis represents the academic years.
 
+In general, the number of doctoral degrees conferred by R2 institutions and "Research Colleges and Universities" has remained relatively stable over the years. The smallest proportion is represented by "Research Colleges and Universities," with R2 institutions showing a modest amount. However, R1 institutions have experienced a significant increase in both the count and proportion of degrees conferred, especially between the 2020-2021 and 2021-2022 academic years. This highlights the growing trend of doctoral degree production within high-research activity institutions. The plot also includes a note that "Research Colleges and Universities" are research-focused but do not meet the criteria for R1 or R2 designation.
 ```{r}
-# Reshape the data to long format
-clean_df_long <- combined_df_na %>%
-  filter(!is.na(num_doc_degrees_2020_2021), !is.na(num_doc_degrees_2021_2022), !is.na(num_doc_degrees_2022_2023), !is.na(research_tier_2025)) %>%
-  pivot_longer(cols = starts_with("num_doc_degrees"), 
-               names_to = "academic_year", 
-               values_to = "num_doc_degrees") %>%
-  mutate(
-    research_tier_2025 = recode(
-      research_tier_2025,
-      "Research 1: Very High Research Spending and Doctorate Production" = "R1",
-      "Research 2: High Research Spending and Doctorate Production" = "R2",
-      "Research Colleges and Universities" = "Research Colleges\nand Universities",
-      academic_year = gsub("num_doc_degrees_", "", academic_year)
-    )
-  )
+# Calculate the counts without proportions
+clean_df_long <- clean_df_long %>%
+  group_by(academic_year) %>%
+  mutate(total_degrees = sum(num_doc_degrees)) %>%
+  ungroup()
 
-# Group by academic year and research tier to calculate the average number of doctoral degrees
-line_plot_data <- clean_df_long %>%
-  group_by(academic_year, research_tier_2025) %>%
-  summarize(avg_doc_degrees = mean(num_doc_degrees, na.rm = TRUE))
-
-# Line plot by academic year for each research tier
-ggplot(line_plot_data, aes(x = academic_year, y = avg_doc_degrees, color = research_tier_2025, group = research_tier_2025)) +
-  geom_line(size = 1.2) + 
-  geom_point(size = 3) + 
+# Stacked bar graph of Doctoral Degrees by Research Tier and Academic Year with regular counts
+ggplot(clean_df_long, aes(x = academic_year, y = num_doc_degrees, fill = research_tier_2025)) +
+  geom_bar(stat = "identity", position = "stack") +  # Stack the bars
   labs(
-    title = "Trend of Average Doctoral Degrees by Research Tier (2020–2023)",
+    title = "Doctoral Degrees Conferred by Research Tier and Academic Year (2020–2023)",
     x = "Academic Year",
-    y = "Average Doctoral Degrees",
-    color = "Research Tier",
+    y = "Count of Doctoral Degrees",
+    fill = "Research Tier",
     caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
   ) +
   theme_minimal() +
   theme(
     plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1)
+    axis.text.x = element_text(size = 10)  # No angle on x-axis labels
+  ) +
+  scale_x_discrete(
+    labels = c("num_doc_degrees_2020_2021" = "2020-2021", 
+               "num_doc_degrees_2021_2022" = "2021-2022", 
+               "num_doc_degrees_2022_2023" = "2022-2023")
+  ) +
+  scale_y_continuous(
+    limits = c(0, 80000), 
+    expand = c(0, 0)
   )
 
 ```
 
+------------------------------------------------------
+
+
+# Count of Institutions by Type and Research Activity Designation (2025) -- 2 graphs
+# by Lily Gates
+This set of grouped bar graphs displays the count of institutions by their type (public, private non-profit, and private for-profit) and their research activity designation (R1, R2, and Research Colleges and Universities) for the year 2025. They represent the same data, but the color-fill and x-axis variables are the opposite on both graphs.
+
+The majority of institutions with any research activity designation in this dataset are public institutions, with far fewer private non-profit and private for-profit institutions in each research activity category. Notably, the Research Colleges and Universities category is the only one that contains private for-profit institutions, with only one school in this group.
+
+In terms of distribution across research activity designations, Research Colleges and Universities appear to have a higher number of private non-profit institutions compared to R1 and R2 institutions. Specifically, Research Colleges and Universities are predominantly composed of private non-profit institutions, whereas R1 and R2 categories show a much stronger representation of public institutions.
+
+Interestingly, the number of public institutions in the R1 category is almost equal to that of the Research Colleges and Universities category, which further suggests that Research Colleges and Universities have a more balanced composition of private non-profit institutions.
+
+This analysis highlights key trends in how research activity designation relates to institutional type, with public institutions overwhelmingly dominating higher research tiers, and Research Colleges and Universities being the outlier with more private non-profit representation.
+
+# Institutions Grouped by Institution Type (Public, Private (non-profit), Private (for-profit))
+```{r}
+# Ensure all combinations of 'public_private_profit' and 'research_tier_2025' are represented
+plot_df_clean <- combined_df_na %>%
+  filter(!is.na(public_private_profit), !is.na(research_tier_2025)) %>%
+  count(research_tier_2025, public_private_profit) %>%
+  complete(research_tier_2025, public_private_profit, fill = list(n = 0))  # Fill missing combinations with 0
+
+# Create the plot
+ggplot(plot_df_clean, aes(x = public_private_profit, y = n, fill = research_tier_2025)) +
+  geom_bar(position = "dodge", stat = "identity", width = 0.7) +  # Adjust width for equal bar widths
+  labs(
+    title = "Count of Institutions by Type and Research Activity Designation (2025)",
+    subtitle = "Excludes institutions without a research designation",
+    x = "Institution Type",
+    y = "Count of Institutions",
+    fill = "Research Activity Designation",
+    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
+  ) +
+  theme_minimal() +
+  scale_x_discrete(labels = c(
+    "Public" = "Public", 
+    "Private non-profit" = "Private (non-profit)", 
+    "Private for-profit" = "Private (for-profit)"
+  )) +
+  scale_y_continuous(limits = c(0, 150), expand = c(0, 0)) +
+  scale_fill_manual(
+    values = c(
+      "Research Colleges and Universities" = "palevioletred",  # Research Colleges stand out
+      "Research 1: Very High Research Spending and Doctorate Production" = "steelblue",  # R1 color
+      "Research 2: High Research Spending and Doctorate Production" = "cornflowerblue"  # R2 color
+    ),
+    labels = c(
+      "Research Colleges and Universities" = "Research Colleges\nand Universities", 
+      "Research 1: Very High Research Spending and Doctorate Production" = "R1", 
+      "Research 2: High Research Spending and Doctorate Production" = "R2"
+    )
+  ) +
+  theme(
+    axis.text.y = element_text(size = 10),
+    legend.position = "bottom",  # Move the legend to the bottom
+    legend.box = "horizontal",   # Makes the legend horizontal
+    legend.title = element_text(size = 12),  # Adding legend title size
+    axis.text.x = element_text(angle = 0, hjust = 0.5)  # Set x-axis labels to 0 degrees (normal)
+  )
+```
+
+# Insitutions Grouped by Research Acivity Designation
+```{r}
+ggplot(plot_df_clean, aes(x = research_tier_2025, y = n, fill = public_private_profit)) +
+  geom_bar(position = "dodge", stat = "identity", width = 0.7) +
+  labs(
+    title = "Count of Institutions by Research Activity Designation and Type (2025)",
+    subtitle = "Excludes institutions without a research designation",
+    x = "Research Activity Designation",
+    y = "Count of Institutions",
+    fill = "Institution Type",
+    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
+  ) +
+  theme_minimal() +
+  scale_x_discrete(labels = c(
+    "Research Colleges and Universities" = "Research Colleges\nand Universities", 
+    "Research 1: Very High Research Spending and Doctorate Production" = "R1", 
+    "Research 2: High Research Spending and Doctorate Production" = "R2"
+  )) +
+  scale_y_continuous(limits = c(0, 150), expand = c(0, 0)) +
+  scale_fill_manual(
+    values = c(
+      "Public" = "seagreen", 
+      "Private not-for-profit" = "darkorange", 
+      "Private for-profit" = "saddlebrown"
+    ),
+    labels = c(
+      "Public" = "Public",
+      "Private not-for-profit" = "Private (non-profit)",
+      "Private for-profit" = "Private (for-profit)"
+    )
+  ) +
+  theme(
+    axis.text.y = element_text(size = 10),
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    legend.title = element_text(size = 12)
+  )
+
+```
+
+------------------------------------------------------
+# Distribution of Spending for Fiscal Year
+# By Colin Thompson
+This histogram displays the distribution of spending for the fiscal year of 2022. This could be used to find the highest amounts of research spending institutions may have. It could also show popular spending ranges for that year. This could then be overall useful in showing what on average is a good range for spending on research.
+
+```{r}
+
+# Using Reg-ex and turning values numeric for herd_fy22 data
+df1$herd_fy22 <- as.numeric(gsub("[$,]", "", df1$herd_fy22))
+
+ggplot(df1, aes(x = herd_fy22)) +
+  geom_histogram(bins = 20) +
+  labs(title = "Histogram of HERD Spending in FY22",
+       x = "HERD Spending (in Billions)",
+       y = "Number of Institutions") +
+  theme_minimal() 
+```
+
+------------------------------------------------------
+
+# Total Enrollment by Research Tier 
+# By Mia Leandri 
+This compares the distribution of total student enrollment across different research tiers — showing the range, median, and variability. It supports your descriptive & comparative question by examining institutional size as a characteristic.
+ 
+```{r}
+# Calculate average admissions rate by research tier
+
+clean_df_long <- combined_df %>%
+  group_by(academic_year) %>%
+  mutate(total_degrees = sum(num_doc_degrees)) %>%
+  ungroup()
+
+avg_admissions <- clean_df_long %>%
+  group_by(research_tier_2025) %>%
+  summarize(mean_admissions_rate = mean(admissions_rate, na.rm = TRUE))
+
+# Plot the average admissions rate by research tier
+ggplot(avg_admissions, aes(x = reorder(research_tier_2025, -mean_admissions_rate), 
+                           y = mean_admissions_rate, 
+                           fill = research_tier_2025)) +
+  geom_col(width = 0.6) +
+  labs(
+    title = "Average Undergraduate Admissions Rate by Research Tier",
+    x = "Research Tier",
+    y = "Average Admissions Rate (%)",
+    fill = "Research Tier"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(size = 10)
+  )
+
+# Define custom colors for each research tier
+tier_colors <- c(
+  "Research 1 (R1)" = "#1f77b4",   # blue
+  "Research 2 (R2)" = "#ff7f0e",   # orange
+  "Research Colleges and Universities" = "#2ca02c"  # green
+)
+
+# Boxplot of total enrollment by research tier with color
+ggplot(clean_df_long, aes(x = research_tier_2025, y = total_enrollment, fill = research_tier_2025)) +
+  geom_boxplot(alpha = 0.8, outlier.color = "gray50", outlier.shape = 16) +
+  scale_fill_manual(values = tier_colors) +
+  labs(
+    title = "Distribution of Total Enrollment by Research Tier",
+    x = "Research Tier",
+    y = "Total Enrollment",
+    fill = "Research Tier"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 10),
+    legend.position = "none"  # Hide legend if x-axis labels are descriptive
+  ) +
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+------------------------------------------------------
+
+# Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
+# By Mia Leandri
+This scatter plot visualizes the relationship between average research spending (from FY2021 to FY2023) and the average number of doctoral degrees awarded (2020–2023) across American higher education institutions.
+
+The x-axis shows average research spending in U.S. dollars, while the y-axis indicates the average number of doctoral degrees conferred. Institutions with greater research spending tend to award more doctoral degrees, illustrating a positive correlation between institutional investment in research and doctoral productivity.
+
+This visualization supports the analytical research question by highlighting how non-financial institutional characteristics (like research tier) correlate with tangible research outcomes such as doctoral degree production.
+
+```{r}
+
+# Clean the spending column (remove $ and commas and convert to numeric)
+clean_df_long <- combined_df %>%
+  mutate(
+    herd_avg_fy21_to_fy23 = as.numeric(gsub("[$,]", "", herd_avg_fy21_to_fy23))
+  )
+
+# Optional: Rename tiers for cleaner display (if needed)
+clean_df_long <- clean_df_long %>%
+  mutate(research_tier_2025 = case_when(
+    grepl("Research 1", research_tier_2025) ~ "Research 1 (R1)",
+    grepl("Research 2", research_tier_2025) ~ "Research 2 (R2)",
+    TRUE ~ "Research Colleges and Universities"
+  ))
+
+# Scatter plot of research spending vs doctoral degrees
+ggplot(clean_df_long, aes(
+  x = herd_avg_fy21_to_fy23,
+  y = avg_num_doc_degrees_2020_2023,
+  color = research_tier_2025
+)) +
+  geom_point(alpha = 0.8, size = 3) +
+  scale_color_brewer(palette = "Set2") +
+  scale_x_continuous(labels = dollar_format()) +
+  labs(
+    title = "Avg. Research Spending vs. Doctoral Degrees (2020–2023)",
+    x = "Avg. Research Spending (FY21–FY23)",
+    y = "Avg. Number of Doctoral Degrees",
+    color = "Research Tier"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+```
