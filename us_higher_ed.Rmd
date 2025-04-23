@@ -183,7 +183,6 @@ Note: Only have to do 1 time
 #install.packages("RColorBrewer")
 ```
 
-
 # Importing Libraries
 ```{r}
 library(tidyverse)
@@ -548,6 +547,95 @@ combined_plot <- raw_count_plot + proportional_plot +
 # Print the combined plot
 combined_plot
 
+```
+# Average Doctoral Degrees by Research Tier (2020-2023)
+# By Lily
+This boxplot displays the distribution of average doctoral degrees awarded from 2020 to 2023 across three research activity designations: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The x-axis represents the average number of doctoral degrees awarded, while the y-axis categorizes institutions by their research tier.
+
+The plot highlights the range, median, and quartiles for each research tier. Research Colleges and Universities, which are considered research-focused but do not meet the rigorous criteria for R1 or R2 designation, show a lower average number of doctoral degrees compared to R1 and R2 institutions. The "Research 1" and "Research 2" categories display higher and more variable averages, reflecting their very high and high research spending, respectively. This visualization provides insight into how research activity designation correlates with doctoral production.
+
+```{r}
+# Clean data and relabel tiers
+clean_df <- combined_df_na %>%
+  filter(!is.na(avg_num_doc_degrees_2020_2023), !is.na(research_tier_2025)) %>%
+  mutate(
+    research_tier_2025 = recode(
+      research_tier_2025,
+      "Research 1: Very High Research Spending and Doctorate Production" = "R1",
+      "Research 2: High Research Spending and Doctorate Production" = "R2",
+      "Research Colleges and Universities" = "Research Colleges\nand Universities"
+    )
+  )
+
+# Plot with horizontal box and whiskers
+ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025)) +
+  geom_boxplot(fill = "slateblue", alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(color = "darkslateblue", alpha = 0.5, size = 1.8) +
+  labs(
+    title = "Average Doctoral Degrees by Research Tier (2020–2023)",
+    x = "Avg. Doctoral Degrees (2020–2023)",
+    y = "Research Tier (2025)",
+    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
+    axis.text.y = element_text(size = 10)
+  )
+```
+
+
+```{r}
+#By Colin Thompson
+
+#This histogram displays the distribution of spending for the fiscal year of 2022. This could be used to find the highest amounts of research spending institutions may have. It could also show popular spending ranges for that year. This could then be overall useful in showing what on average is a good range for spending on research.
+
+# Using Reg-ex and turning values numeric for herd_fy22 data
+df1$herd_fy22 <- as.numeric(gsub("[$,]", "", df1$herd_fy22))
+
+ggplot(df1, aes(x = herd_fy22)) +
+  geom_histogram(bins = 20) +
+  labs(title = "Histogram of HERD Spending in FY22",
+       x = "HERD Spending (in Billions)",
+       y = "Number of Institutions") +
+  theme_minimal() 
+```
+# Doctoral Degrees Conferred by Research Tier and Academic Year (2020-2023)
+# By Lily
+This stacked bar graph visualizes the count of doctoral degrees conferred across different academic years (2020–2023), broken down by research tier. The research tiers are represented by three categories: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The bars for each academic year are stacked to show the distribution of doctoral degrees within each research tier, allowing for an understanding of how the number of degrees varies across tiers and over time. The y-axis represents the raw count of doctoral degrees, and the x-axis represents the academic years.
+
+In general, the number of doctoral degrees conferred by R2 institutions and "Research Colleges and Universities" has remained relatively stable over the years. The smallest proportion is represented by "Research Colleges and Universities," with R2 institutions showing a modest amount. However, R1 institutions have experienced a significant increase in both the count and proportion of degrees conferred, especially between the 2020-2021 and 2021-2022 academic years. This highlights the growing trend of doctoral degree production within high-research activity institutions. The plot also includes a note that "Research Colleges and Universities" are research-focused but do not meet the criteria for R1 or R2 designation.
+```{r}
+# Calculate the counts without proportions
+clean_df_long <- clean_df_long %>%
+  group_by(academic_year) %>%
+  mutate(total_degrees = sum(num_doc_degrees)) %>%
+  ungroup()
+
+# Stacked bar graph of Doctoral Degrees by Research Tier and Academic Year with regular counts
+ggplot(clean_df_long, aes(x = academic_year, y = num_doc_degrees, fill = research_tier_2025)) +
+  geom_bar(stat = "identity", position = "stack") +  # Stack the bars
+  labs(
+    title = "Doctoral Degrees Conferred by Research Tier and Academic Year (2020–2023)",
+    x = "Academic Year",
+    y = "Count of Doctoral Degrees",
+    fill = "Research Tier",
+    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
+    axis.text.x = element_text(size = 10)  # No angle on x-axis labels
+  ) +
+  scale_x_discrete(
+    labels = c("num_doc_degrees_2020_2021" = "2020-2021",
+               "num_doc_degrees_2021_2022" = "2021-2022",
+               "num_doc_degrees_2022_2023" = "2022-2023")
+  ) +
+  scale_y_continuous(
+    limits = c(0, 80000),
+    expand = c(0, 0)
+  )
 ```
 
 
