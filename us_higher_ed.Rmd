@@ -180,7 +180,7 @@ Note: Only have to do 1 time
 ```{r}
 #install.packages("patchwork")
 #install.packages("scales")
-
+#install.packages("RColorBrewer")
 ```
 
 # Importing Libraries
@@ -193,6 +193,7 @@ library(lubridate)  # for Datetime formatting
 library(stringr)  # for extracting URL
 library(patchwork)  # for putting multiple graphs on one fig
 library(scales)
+library(RColorBrewer)  # for color palettes
 
 ```
 
@@ -463,22 +464,15 @@ combined_df_na_cleaned$college_type <- factor(combined_df_na_cleaned$college_typ
 
 # Proportion stacked bar plot (horizontal) with 4 columns for the legend
 p2 <- ggplot(combined_df_na_cleaned, aes(y = college_type, fill = subcategory)) + 
-  geom_bar(position = "fill") +
-  scale_fill_manual(
-    values = color_palette_shaded,
-    name = "Subcategory",  # Legend title
-    guide = guide_legend(ncol = 3, title.position = "top") 
-  ) +
-  labs(
-    title = "Proportion of Institutions by College Type and Subcategory",
-    x = "Proportion", 
-    y = "College Type"
-  ) +
+  geom_bar(position = "fill") +  # This scales the bars to 100% for each college type
+  scale_fill_manual(values = color_palette_shaded) +  # Apply the custom color palette
+  labs(title = "Proportional Counts by College Type and Subcategory",
+       x = "Proportion of Institutions",
+       y = "College Type") +              
   theme_minimal() +
-  theme(
-    axis.text.y = element_text(angle = 0),
-    legend.position = "bottom"
-  )
+  theme(axis.text.y = element_text(angle = 0),    # Keep y-axis labels horizontal
+        axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
+  guides(fill = guide_legend(ncol = 1, title = "Subcategory"))
 
 # Print the plot
 p2
@@ -644,18 +638,6 @@ ggplot(clean_df_long, aes(x = academic_year, y = num_doc_degrees, fill = researc
   )
 ```
 
-```{r}
-ggplot(combined_df_na_cleaned, aes(y = college_type, fill = subcategory)) + 
-  geom_bar(position = "fill") +  # This scales the bars to 100% for each college type
-  scale_fill_manual(values = color_palette_shaded) +  # Apply the custom color palette
-  labs(title = "Proportional Counts by College Type and Subcategory",
-       x = "Proportion of Institutions",  # This will now show proportion
-       y = "College Type") +              # This will remain the college type
-  theme_minimal() +
-  theme(axis.text.y = element_text(angle = 0),    # Keep y-axis labels horizontal
-        axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
-
-```
 
 ------------------------------------------------------
 
@@ -695,6 +677,7 @@ ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025))
 
 ```
 
+
 ------------------------------------------------------
 
 # Doctoral Degrees Conferred by Research Tier and Academic Year (2020-2023)
@@ -702,16 +685,46 @@ ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025))
 This stacked bar graph visualizes the count of doctoral degrees conferred across different academic years (2020–2023), broken down by research tier. The research tiers are represented by three categories: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The bars for each academic year are stacked to show the distribution of doctoral degrees within each research tier, allowing for an understanding of how the number of degrees varies across tiers and over time. The y-axis represents the raw count of doctoral degrees, and the x-axis represents the academic years.
 
 In general, the number of doctoral degrees conferred by R2 institutions and "Research Colleges and Universities" has remained relatively stable over the years. The smallest proportion is represented by "Research Colleges and Universities," with R2 institutions showing a modest amount. However, R1 institutions have experienced a significant increase in both the count and proportion of degrees conferred, especially between the 2020-2021 and 2021-2022 academic years. This highlights the growing trend of doctoral degree production within high-research activity institutions. The plot also includes a note that "Research Colleges and Universities" are research-focused but do not meet the criteria for R1 or R2 designation.
-```{r}
-# Calculate the counts without proportions
-clean_df_long <- clean_df_long %>%
-  group_by(academic_year) %>%
-  mutate(total_degrees = sum(num_doc_degrees)) %>%
-  ungroup()
 
-# Stacked bar graph of Doctoral Degrees by Research Tier and Academic Year with regular counts
-ggplot(clean_df_long, aes(x = academic_year, y = num_doc_degrees, fill = research_tier_2025)) +
-  geom_bar(stat = "identity", position = "stack") +  # Stack the bars
+```{r}
+# Reshape the data into long format for easier plotting and drop NA values
+long_combined_df <- combined_df_na_cleaned %>%
+  select(
+    research_tier_2025,
+    num_doc_degrees_2020_2021,
+    num_doc_degrees_2021_2022,
+    num_doc_degrees_2022_2023
+  ) %>%
+  pivot_longer(
+    cols = c(
+      "num_doc_degrees_2020_2021",
+      "num_doc_degrees_2021_2022",
+      "num_doc_degrees_2022_2023"
+    ),
+    names_to = "academic_year",
+    values_to = "num_doc_degrees"
+  ) %>%
+  # Clean up the research tier labels and academic year labels
+  mutate(
+    research_tier_2025 = recode(
+      research_tier_2025, 
+      "Research 1: Very High Research Spending and Doctorate Production" = "Research 1", 
+      "Research 2: High Research Spending and Doctorate Production" = "Research 2",
+      "Research Colleges and Universities" = "Research Colleges and Universities"
+    ),
+    academic_year = recode(
+      academic_year,
+      "num_doc_degrees_2020_2021" = "2020-2021",
+      "num_doc_degrees_2021_2022" = "2021-2022",
+      "num_doc_degrees_2022_2023" = "2022-2023"
+    )
+  ) %>%
+  # Filter out any rows with NA values in num_doc_degrees or research_tier_2025
+  filter(!is.na(num_doc_degrees), !is.na(research_tier_2025))
+
+# Create a stacked bar graph of doctoral degrees by research tier and academic year
+ggplot(long_combined_df, aes(x = academic_year, y = num_doc_degrees, fill = research_tier_2025)) +
+  geom_bar(stat = "identity", position = "stack") +
   labs(
     title = "Doctoral Degrees Conferred by Research Tier and Academic Year (2020–2023)",
     x = "Academic Year",
@@ -721,20 +734,25 @@ ggplot(clean_df_long, aes(x = academic_year, y = num_doc_degrees, fill = researc
   ) +
   theme_minimal() +
   theme(
+    plot.title = element_text(hjust = 0),
+    axis.text.x = element_text(angle = 0, hjust = 0.5),  # Center the x-axis labels
     plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
-    axis.text.x = element_text(size = 10)  # No angle on x-axis labels
+    legend.position = "right",  # Keep the legend on the right
+    legend.box = "vertical"  # Arrange legend vertically
   ) +
-  scale_x_discrete(
-    labels = c("num_doc_degrees_2020_2021" = "2020-2021", 
-               "num_doc_degrees_2021_2022" = "2021-2022", 
-               "num_doc_degrees_2022_2023" = "2022-2023")
+  guides(
+    fill = guide_legend(ncol = 1)  # Set the legend to 1 column
+  ) +
+  scale_fill_manual(
+    values = c("Research 1" = "#4C79A1", "Research 2" = "#F1A340", "Research Colleges and Universities" = "#6D9D4B"),  # New colors
+    labels = c("Research 1", "Research 2", "Research Colleges and Universities")  # Set the legend labels
   ) +
   scale_y_continuous(
-    limits = c(0, 80000), 
-    expand = c(0, 0)
+    labels = scales::comma  # Adds commas to the y-axis labels for better readability
   )
 
 ```
+
 
 ------------------------------------------------------
 
@@ -840,84 +858,129 @@ ggplot(plot_df_clean, aes(x = research_tier_2025, y = n, fill = public_private_p
 ```
 
 ------------------------------------------------------
-# Distribution of Spending for Fiscal Year
+# Distribution of Spending for Fiscal Year 2022
 # By Colin Thompson
-This histogram displays the distribution of spending for the fiscal year of 2022. This could be used to find the highest amounts of research spending institutions may have. It could also show popular spending ranges for that year. This could then be overall useful in showing what on average is a good range for spending on research.
+This histogram displays the distribution of HERD spending across three fiscal years: 2021, 2022, and 2023. It highlights the range of research spending institutions report, with the peak around 0.05 billion dollars in fiscal year 2023, suggesting that many institutions are clustered in this spending range. Over the years, spending has gradually increased, especially in FY2023, indicating a growing trend in research investment. By examining this distribution, we can identify the most common spending ranges, which can help provide insight into what is considered typical or desirable for research spending. The graph also reveals the highest amounts of spending, useful for understanding the research budgets of institutions with the largest research investments.
+
 
 ```{r}
+# Clean and reshape HERD data for all three fiscal years (FY21, FY22, FY23)
 
-# Using Reg-ex and turning values numeric for herd_fy22 data
-df1$herd_fy22 <- as.numeric(gsub("[$,]", "", df1$herd_fy22))
-
-ggplot(df1, aes(x = herd_fy22)) +
-  geom_histogram(bins = 20) +
-  labs(title = "Histogram of HERD Spending in FY22",
-       x = "HERD Spending (in Billions)",
-       y = "Number of Institutions") +
-  theme_minimal() 
-```
-
-------------------------------------------------------
-
-# Total Enrollment by Research Tier 
-# By Mia Leandri 
-This compares the distribution of total student enrollment across different research tiers — showing the range, median, and variability. It supports your descriptive & comparative question by examining institutional size as a characteristic.
- 
-```{r}
-# Calculate average admissions rate by research tier
-
-clean_df_long <- combined_df %>%
-  group_by(academic_year) %>%
-  mutate(total_degrees = sum(num_doc_degrees)) %>%
-  ungroup()
-
-avg_admissions <- clean_df_long %>%
-  group_by(research_tier_2025) %>%
-  summarize(mean_admissions_rate = mean(admissions_rate, na.rm = TRUE))
-
-# Plot the average admissions rate by research tier
-ggplot(avg_admissions, aes(x = reorder(research_tier_2025, -mean_admissions_rate), 
-                           y = mean_admissions_rate, 
-                           fill = research_tier_2025)) +
-  geom_col(width = 0.6) +
-  labs(
-    title = "Average Undergraduate Admissions Rate by Research Tier",
-    x = "Research Tier",
-    y = "Average Admissions Rate (%)",
-    fill = "Research Tier"
-  ) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  theme_minimal() +
-  theme(
-    legend.position = "none",
-    axis.text.x = element_text(size = 10)
+combined_df_long <- combined_df_na_cleaned %>%
+  select(research_tier_2025, herd_fy21, herd_fy22, herd_fy23) %>%
+  pivot_longer(
+    cols = starts_with("herd_fy"),
+    names_to = "fiscal_year",
+    values_to = "herd_spending"
+  ) %>%
+  filter(!is.na(herd_spending)) %>%
+  mutate(
+    fiscal_year = recode(
+      fiscal_year,
+      herd_fy21 = "HERD Spending FY2021",
+      herd_fy22 = "HERD Spending FY2022",
+      herd_fy23 = "HERD Spending FY2023"
+    )
   )
 
-# Define custom colors for each research tier
-tier_colors <- c(
-  "Research 1 (R1)" = "#1f77b4",   # blue
-  "Research 2 (R2)" = "#ff7f0e",   # orange
-  "Research Colleges and Universities" = "#2ca02c"  # green
-)
-
-# Boxplot of total enrollment by research tier with color
-ggplot(clean_df_long, aes(x = research_tier_2025, y = total_enrollment, fill = research_tier_2025)) +
-  geom_boxplot(alpha = 0.8, outlier.color = "gray50", outlier.shape = 16) +
-  scale_fill_manual(values = tier_colors) +
+# Plot distribution of HERD spending for FY21, FY22, and FY23 with log scale
+ggplot(combined_df_long, aes(x = herd_spending)) +
+  geom_histogram(bins = 20, color = "black", fill = "seagreen", alpha = 0.85) +
+  scale_x_log10(labels = scales::dollar_format(scale = 1e-9, suffix = "B")) +
+  facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) + # Arrange FY21, FY22, FY23 side by side
   labs(
-    title = "Distribution of Total Enrollment by Research Tier",
-    x = "Research Tier",
-    y = "Total Enrollment",
-    fill = "Research Tier"
+    title = "Distribution of HERD Spending for Fiscal Years 2021, 2022, and 2023",
+    x = "HERD Spending (Log Scale, in Billions)",
+    y = "Number of Institutions"
   ) +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(size = 10),
-    legend.position = "none"  # Hide legend if x-axis labels are descriptive
-  ) +
-  scale_y_continuous(labels = scales::comma)
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold"),
+    legend.position = "none"
+  )
+
 
 ```
+
+
+------------------------------------------------------
+# HERD Spending by Fiscal Year and Research Tier
+# By Lily Gates
+This histogram displays research spending (HERD) across three types of institutions for fiscal years 2021, 2022, and 2023:
+- Research Colleges and Universities (R Colleges): These institutions generally have the lowest research spending, concentrated on the left side of the graph.
+- Research 2 (R2): R2 institutions fall in the middle range, with some overlapping with both R Colleges and Research 1 institutions.
+- Research 1 (R1): These institutions have the highest research spending, appearing on the far right.
+
+The log scale on the x-axis highlights differences in spending, particularly at the higher end. The overlap between R2 and the other categories suggests that some R2 institutions have spending comparable to R1 or R Colleges.
+
+
+```{r}
+# Filter out rows with NAs in research_tier_simple or herd_spending
+combined_df_long <- combined_df_na_cleaned %>%
+  select(research_tier_2025, herd_fy21, herd_fy22, herd_fy23) %>%
+  pivot_longer(
+    cols = starts_with("herd_fy"),
+    names_to = "fiscal_year",
+    values_to = "herd_spending"
+  ) %>%
+  filter(!is.na(herd_spending), !is.na(research_tier_2025)) %>%
+  mutate(
+    fiscal_year = recode(
+      fiscal_year,
+      herd_fy21 = "HERD Spending FY2021",
+      herd_fy22 = "HERD Spending FY2022",
+      herd_fy23 = "HERD Spending FY2023"
+    ),
+    # Simplify research tier labels
+    research_tier_simple = recode(
+      research_tier_2025,
+      "Research 1: Very High Research Spending and Doctorate Production" = "Research 1",
+      "Research 2: High Research Spending and Doctorate Production" = "Research 2",
+      "Research Colleges and Universities" = "Research Colleges and Universities"
+    )
+  ) %>%
+  filter(!is.na(research_tier_simple), !is.na(herd_spending))  # Remove NAs
+
+# Plot with simplified legend labels and without NAs
+ggplot(combined_df_long, aes(x = herd_spending, fill = research_tier_simple)) +
+  geom_histogram(bins = 30, color = "black", alpha = 0.8, position = "identity") +
+  scale_x_log10(labels = scales::dollar_format(scale = 1e-9, suffix = "B")) +
+  facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) +
+  scale_fill_manual(
+    values = c(
+      "Research 1" = brewer.pal(3, "Set2")[1],
+      "Research 2" = brewer.pal(3, "Set2")[2],
+      "Research Colleges and Universities" = brewer.pal(3, "Set2")[3]
+    ),
+    labels = c("Research 1", "Research 2", "Research Colleges and Universities")  # Simplify the legend labels
+  ) +
+  labs(
+    title = "HERD Spending by Fiscal Year and Research Tier (Log Scale)",
+    subtitle = "Excludes institutions without a research designation",
+    x = "HERD Spending (Log Scale, in Billions)",
+    y = "Number of Institutions",
+    fill = "Research Tier",
+    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    plot.caption = element_text(hjust = 0.5, size = 9),
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  )
+
+```
+
+```{r}
+combined_df_na$research_tier_2025
+```
+
+
+------------------------------------------------------
 
 # Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
 # By Mia Leandri
@@ -928,12 +991,11 @@ The x-axis shows average research spending in U.S. dollars, while the y-axis ind
 This visualization supports the analytical research question by highlighting how non-financial institutional characteristics (like research tier) correlate with tangible research outcomes such as doctoral degree production.
 
 ```{r}
-
-
 # Clean the spending column (remove $ and commas and convert to numeric)
 clean_df_long <- combined_df %>%
   mutate(
-    herd_avg_fy21_to_fy23 = as.numeric(gsub("[$,]", "", herd_avg_fy21_to_fy23))
+    herd_avg_fy21_to_fy23 = as.numeric(gsub("[$,]", "", herd_avg_fy21_to_fy23)),
+    herd_avg_fy21_to_fy23_billions = herd_avg_fy21_to_fy23 / 1e9  # Convert to billions
   )
 
 # Optional: Rename tiers for cleaner display (if needed)
@@ -946,24 +1008,114 @@ clean_df_long <- clean_df_long %>%
 
 # Scatter plot of research spending vs doctoral degrees
 ggplot(clean_df_long, aes(
-  x = herd_avg_fy21_to_fy23,
+  x = herd_avg_fy21_to_fy23_billions,
   y = avg_num_doc_degrees_2020_2023,
   color = research_tier_2025
 )) +
-  geom_point(alpha = 0.8, size = 3) +
+  geom_point(alpha = 0.8, size = 1.25) +
   scale_color_brewer(palette = "Set2") +
-  scale_x_continuous(labels = dollar_format()) +
+  scale_x_continuous(
+    labels = scales::label_dollar(scale = 1, suffix = "B"),  # Format in billions
+    breaks = scales::pretty_breaks(n = 10)  # More breaks on the x-axis
+  ) +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 10)  # More breaks on the y-axis
+  ) +
   labs(
     title = "Avg. Research Spending vs. Doctoral Degrees (2020–2023)",
-    x = "Avg. Research Spending (FY21–FY23)",
+    x = "Avg. Research Spending (Billions USD)",
     y = "Avg. Number of Doctoral Degrees",
     color = "Research Tier"
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom",  # Position the legend below the x-axis
+    legend.key.width = unit(1, "cm"),  # Adjust the width of the legend keys
+    legend.key.height = unit(0.5, "cm"),  # Adjust the height of the legend keys
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  ) +
+  guides(color = guide_legend(ncol = 3))  # Set the legend to 3 columns
+
+```
+
+------------------------------------------------------
+
+# Distribution of Size and Residential Type by Research Type
+# By Mia Leandri
+This grouped bar chart displays the distribution of research-designated institutions (R1, R2, and Research Colleges and Universities) across different campus size and residential categories, focusing only on 4-year universities. Institutions are categorized by size (Very Small to Large) and residential character (Highly Residential to Primarily Nonresidential), providing a detailed look at how research activity is spread across different campus environments. The chart reveals trends in how institutional research tiers align with campus scale and student living dynamics, offering insights into the structural diversity of U.S. higher education.
+```{r}
+# Clean and categorize the data
+clean_combined_df <- combined_df_na %>%
+  mutate(
+    size_category = case_when(
+      grepl("very small", size_setting) ~ "Very Small",
+      grepl("small", size_setting) ~ "Small",
+      grepl("medium", size_setting) ~ "Medium",
+      grepl("large", size_setting) ~ "Large",
+      TRUE ~ NA_character_  # Filter out non-4-year
+    ),
+    residential_category = case_when(
+      grepl("highly residential", size_setting) ~ "Highly Residential",
+      grepl("primarily residential", size_setting) ~ "Primarily Residential",
+      grepl("primarily nonresidential", size_setting) ~ "Primarily Nonresidential",
+      TRUE ~ NA_character_
+    ),
+    research_tier_2025 = factor(
+      research_tier_2025,
+      levels = c(
+        "Research 1: Very High Research Spending and Doctorate Production",
+        "Research 2: High Research Spending and Doctorate Production",
+        "Research Colleges and Universities"
+      )
+    )
+  ) %>%
+  filter(!is.na(size_category) & !is.na(residential_category))
+
+# Define label shorteners for x-axis and legend
+research_labels <- c(
+  "Research 1: Very High Research Spending and Doctorate Production" = "R1",
+  "Research 2: High Research Spending and Doctorate Production" = "R2",
+  "Research Colleges and Universities" = "Research\nColleges"
+)
+
+# Plot: Grouped bar chart faceted by size and residential categories
+ggplot(clean_combined_df, aes(x = research_tier_2025, fill = research_tier_2025)) +
+  geom_bar(position = "dodge") +
+  facet_grid(size_category ~ residential_category, scales = "free_x") +
+  scale_x_discrete(labels = research_labels) +
+  scale_fill_manual(
+    values = c(
+      "Research 1: Very High Research Spending and Doctorate Production" = "#1b9e77",
+      "Research 2: High Research Spending and Doctorate Production" = "#d95f02",
+      "Research Colleges and Universities" = "#7570b3"
+    ),
+    labels = research_labels
+  ) +
+  labs(
+    title = "Research Tiers by Size and Residential Type (4-Year Universities Only)",
+    x = "Research Tier",
+    y = "Number of Institutions",
+    fill = "Research Tier",
+    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = .5, size = 10),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    legend.position = "bottom",
+    legend.title = element_text(size = 11),
+    legend.text = element_text(size = 10),
+    strip.text.x = element_text(size = 11),
+    strip.text.y = element_text(size = 11),
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.caption = element_text(size = 9, face = "italic", hjust = 1)
   )
 
 
 ```
+
+
