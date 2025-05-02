@@ -2,7 +2,7 @@
 title: "us_higher_ed"
 output: html_document
 name: Diamond Andy, Lily Gates, Mia Leandri, Colin Thompson
-date: 04/20/2025
+date: 05/02/2025
 ---
 -----------------------------------------------
 # PROJECT OVERVIEW
@@ -18,10 +18,12 @@ Exploring the differences between American research colleges and universities th
 
 ## Research Question/Topic
 1. Descriptive and Comparative Question
-**How do different tiered American research colleges and universities compare in terms of location, admissions, academic offerings, doctoral degrees awarded, and other institutional characteristics?**
+**How do institutional characteristics compare between how different American research colleges and universities are classified ("R1", "R2", "Research Colleges and Universities (Unranked)")**
+  * Exploring features, such as the location, admissions, academic offerings, and doctoral degrees awarded
 
 2. Analytical and Inferential Question
-**How do other institutional characteristics, besides financial expenditures, predict or correlate with research designation tiers among American colleges and universities?**
+**How do institutional characteristics predict or correlate with research designation tiers among American colleges and universities?**
+  * Exploring features, such as the location, admissions, academic offerings, and doctoral degrees awarded
 
 ## Research Narrative
 Our chosen datasets should be well-suited to address both our descriptive/comparative and analytical/inferential research questions. For descriptive and comparative purposes, we have access to data on most of the key factors we aim to explore, allowing us to describe and compare differences across universities. For instance, we can analyze the geographic distribution of institutions by state and city, admissions data on who is being admitted, academic offerings across universities, and the number of doctoral degrees awarded at each institution. By combining this information with institutional research spending data from the `carnegie_spending_doctorate_awards` dataset and basic school characteristics from `carnegie_classification_stats`, we can compare which factors may contribute to higher research spending across institutions.
@@ -32,7 +34,7 @@ Our primary audience includes college and university administrators. We hope thi
 
 -----------------------------------------------
 # DATA AND RESEARCH SOURCES
-# Data Enginner - Colin Thompson
+# Data Enginners - Colin Thompson (finding, describing) and Lily Gates (cleaning, combining datasets)
 -----------------------------------------------
 
 ## Data and Research Sources Overview
@@ -178,10 +180,11 @@ The `carnegie_spending_doctorate_awards` dataset complements this information by
 # Installing Packages
 Note: Only have to do 1 time
 ```{r}
-#install.packages("patchwork")
-#install.packages("scales")
-#install.packages("RColorBrewer")
+# install.packages("patchwork")
+# install.packages("scales")
+# install.packages("RColorBrewer")
 ```
+
 
 # Importing Libraries
 ```{r}
@@ -199,9 +202,9 @@ library(RColorBrewer)  # for color palettes
 
 # Reading in Data
 ```{r}
-classification_stats <- read_csv("carnegie_classification_stats - CLEAN.csv")
+classification_stats <- read_csv("carnegie_classification_stats.csv")
 
-spending_doctorate_awards <- read_csv("carnegie_spending_doctorate_awards - CLEAN.csv")
+spending_doctorate_awards <- read_csv("carnegie_spending_doctorate_awards.csv")
 ```
 
 # Preview and Summarize Data
@@ -226,17 +229,47 @@ class(classification_df)
 
 spending_df <- data.frame(spending_doctorate_awards)
 class(spending_df)
+colnames(spending_df)
 ```
+
+------------------------------------------------------
+# CLEANING DATA
+------------------------------------------------------
+
+# Convert and Ensure Financial Values are Numeric
+For `spending_df` columns herd_fyXX
+Replace any missing values with NA
+
+```{r}
+# Clean and convert HERD columns to integer
+spending_df <- spending_df %>%
+  mutate(
+    herd_fy21 = as.integer(parse_number(as.character(herd_fy21))),
+    herd_fy22 = as.integer(parse_number(as.character(herd_fy22))),
+    herd_fy23 = as.integer(parse_number(as.character(herd_fy23))),
+    herd_avg_fy21_to_fy23 = as.integer(parse_number(as.character(herd_avg_fy21_to_fy23)))
+  )
+
+# Inspect rows where parsing failed (NAs introduced)
+problematic_rows <- spending_df %>%
+  filter(if_any(c(herd_fy21, herd_fy22, herd_fy23, herd_avg_fy21_to_fy23), is.na)) %>%
+  distinct()
+
+# View problematic rows – check for Johns Hopkins, Kent State, or other issues
+print(problematic_rows)
+
+```
+
+
+# Combine Both into Single Dataframe
+# Note: has name.x and name.y
+- This is because the `classification_df` and `spending_df` both have "name" but it was raising an error: "Error: unexpected symbol" for that column when trying to do a full join
 
 ```{r}
 # Confirming column names on what to join by
 colnames(classification_df)
 colnames(spending_df)
 ```
-
-# Combine Both into Single Dataframe
-# Note: has name.x and name.y
-- This is because the `classification_df` and `spending_df` both have "name" but it was raising an error: "Error: unexpected symbol" for that column when trying to do a full join
 
 ```{r}
 # Perform full join on 'unitid'
@@ -246,16 +279,15 @@ combined_df <- full_join(classification_df, spending_df, by = "unitid")
 colnames(combined_df)
 ```
 
-------------------------------------------------------
-# CLEANING DATA
-------------------------------------------------------
-
 # Debugging - Checking for Duplicate Values in Duplicate Column Names
 (name, city, state each have x and y values)
 The `.x` refers to the column coming from `classification_df`
 The `.y` refers to the column coming from `spending_df`
 
 ```{r}
+
+# Total issues = 13
+
 # Duplicate School Names (there are 12)
 combined_df %>%
   filter(name.x != name.y) %>%
@@ -319,15 +351,17 @@ print(missing_data)
 
 ```
 
+
 ```{r}
+
 # Filter rows where name.x or name.y is NA, and select unitid, name.x, name.y
+# Should be referring to Penn State, with 2 different unitid AND different school name spelling
+
 rows_with_na_names <- combined_df_na %>%
   filter(is.na(name.x) | is.na(name.y)) %>%
   select(unitid, name.x, name.y, city.x, city.y)
 
 print(rows_with_na_names)
-# Sould be referring to Penn State, with 2 different unitid AND different school name spelling
-
 ```
 
 ------------------------------------------------------
@@ -343,6 +377,7 @@ print(rows_with_na_names)
 # Number of Institutions by Research Classification 2021
 # 2 Versions (Raw count and relative proportion)
 # By Diamond Andy
+
 This bar graph represents the number of institutions that were categorized under the 2021 Carnegie research classification tier. Comparing how many universities fall into each group and highlights the overall distribution of research in U.S. Institutions. This visualization also helps emphasize the tiers that are less common.
 
 # Filter and Assign Color Palette
@@ -479,11 +514,11 @@ p2
 
 ```
 
-
 ------------------------------------------------------
 
 # Research Activity Designations (2025)
 # By Lily Gates
+
 This graph visualizes the raw count and relative distribution of institutions by their research activity designation in 2025. The categories displayed include "Research Colleges and Universities", "Research 1", and "Research 2". Data excludes institutions without a research designation.
 
 The graph shows the both the raw count and relative distribution of institutions across three research activity categories: Research Colleges and Universities (RCA), Research 1 (R1), and Research 2 (R2).
@@ -492,7 +527,6 @@ The graph shows the both the raw count and relative distribution of institutions
   - R2 institutions spend at least $5 million and produce at least 20 research doctorates.
 
 ```{r}
-
 # Prepare the data and drop NA
 plot_data <- combined_df_na %>%
   filter(!is.na(research_tier_2025)) %>%
@@ -546,106 +580,17 @@ combined_plot <- raw_count_plot + proportional_plot +
 
 # Print the combined plot
 combined_plot
-
 ```
-# Average Doctoral Degrees by Research Tier (2020-2023)
-# By Lily
-This boxplot displays the distribution of average doctoral degrees awarded from 2020 to 2023 across three research activity designations: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The x-axis represents the average number of doctoral degrees awarded, while the y-axis categorizes institutions by their research tier.
-
-The plot highlights the range, median, and quartiles for each research tier. Research Colleges and Universities, which are considered research-focused but do not meet the rigorous criteria for R1 or R2 designation, show a lower average number of doctoral degrees compared to R1 and R2 institutions. The "Research 1" and "Research 2" categories display higher and more variable averages, reflecting their very high and high research spending, respectively. This visualization provides insight into how research activity designation correlates with doctoral production.
-
-```{r}
-# Clean data and relabel tiers
-clean_df <- combined_df_na %>%
-  filter(!is.na(avg_num_doc_degrees_2020_2023), !is.na(research_tier_2025)) %>%
-  mutate(
-    research_tier_2025 = recode(
-      research_tier_2025,
-      "Research 1: Very High Research Spending and Doctorate Production" = "R1",
-      "Research 2: High Research Spending and Doctorate Production" = "R2",
-      "Research Colleges and Universities" = "Research Colleges\nand Universities"
-    )
-  )
-
-# Plot with horizontal box and whiskers
-ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025)) +
-  geom_boxplot(fill = "slateblue", alpha = 0.7, outlier.shape = NA) +
-  geom_jitter(color = "darkslateblue", alpha = 0.5, size = 1.8) +
-  labs(
-    title = "Average Doctoral Degrees by Research Tier (2020–2023)",
-    x = "Avg. Doctoral Degrees (2020–2023)",
-    y = "Research Tier (2025)",
-    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
-    axis.text.y = element_text(size = 10)
-  )
-```
-
-
-```{r}
-#By Colin Thompson
-
-#This histogram displays the distribution of spending for the fiscal year of 2022. This could be used to find the highest amounts of research spending institutions may have. It could also show popular spending ranges for that year. This could then be overall useful in showing what on average is a good range for spending on research.
-
-# Using Reg-ex and turning values numeric for herd_fy22 data
-df1$herd_fy22 <- as.numeric(gsub("[$,]", "", df1$herd_fy22))
-
-ggplot(df1, aes(x = herd_fy22)) +
-  geom_histogram(bins = 20) +
-  labs(title = "Histogram of HERD Spending in FY22",
-       x = "HERD Spending (in Billions)",
-       y = "Number of Institutions") +
-  theme_minimal() 
-```
-# Doctoral Degrees Conferred by Research Tier and Academic Year (2020-2023)
-# By Lily
-This stacked bar graph visualizes the count of doctoral degrees conferred across different academic years (2020–2023), broken down by research tier. The research tiers are represented by three categories: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The bars for each academic year are stacked to show the distribution of doctoral degrees within each research tier, allowing for an understanding of how the number of degrees varies across tiers and over time. The y-axis represents the raw count of doctoral degrees, and the x-axis represents the academic years.
-
-In general, the number of doctoral degrees conferred by R2 institutions and "Research Colleges and Universities" has remained relatively stable over the years. The smallest proportion is represented by "Research Colleges and Universities," with R2 institutions showing a modest amount. However, R1 institutions have experienced a significant increase in both the count and proportion of degrees conferred, especially between the 2020-2021 and 2021-2022 academic years. This highlights the growing trend of doctoral degree production within high-research activity institutions. The plot also includes a note that "Research Colleges and Universities" are research-focused but do not meet the criteria for R1 or R2 designation.
-```{r}
-# Calculate the counts without proportions
-clean_df_long <- clean_df_long %>%
-  group_by(academic_year) %>%
-  mutate(total_degrees = sum(num_doc_degrees)) %>%
-  ungroup()
-
-# Stacked bar graph of Doctoral Degrees by Research Tier and Academic Year with regular counts
-ggplot(clean_df_long, aes(x = academic_year, y = num_doc_degrees, fill = research_tier_2025)) +
-  geom_bar(stat = "identity", position = "stack") +  # Stack the bars
-  labs(
-    title = "Doctoral Degrees Conferred by Research Tier and Academic Year (2020–2023)",
-    x = "Academic Year",
-    y = "Count of Doctoral Degrees",
-    fill = "Research Tier",
-    caption = "Note: 'Research Colleges and Universities' are research-focused but do not meet R1 or R2 criteria"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
-    axis.text.x = element_text(size = 10)  # No angle on x-axis labels
-  ) +
-  scale_x_discrete(
-    labels = c("num_doc_degrees_2020_2021" = "2020-2021",
-               "num_doc_degrees_2021_2022" = "2021-2022",
-               "num_doc_degrees_2022_2023" = "2022-2023")
-  ) +
-  scale_y_continuous(
-    limits = c(0, 80000),
-    expand = c(0, 0)
-  )
-```
-
 
 ------------------------------------------------------
 
 # Average Doctoral Degrees by Research Tier (2020-2023)
 # By Lily Gates
+
 This boxplot displays the distribution of average doctoral degrees awarded from 2020 to 2023 across three research activity designations: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The x-axis represents the average number of doctoral degrees awarded, while the y-axis categorizes institutions by their research tier. 
 
 The plot highlights the range, median, and quartiles for each research tier. Research Colleges and Universities, which are considered research-focused but do not meet the rigorous criteria for R1 or R2 designation, show a lower average number of doctoral degrees compared to R1 and R2 institutions. The "Research 1" and "Research 2" categories display higher and more variable averages, reflecting their very high and high research spending, respectively. This visualization provides insight into how research activity designation correlates with doctoral production.
+
 ```{r}
 # Clean data and relabel tiers
 clean_df <- combined_df_na %>%
@@ -674,14 +619,13 @@ ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025))
     plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
     axis.text.y = element_text(size = 10)
   )
-
 ```
-
 
 ------------------------------------------------------
 
 # Doctoral Degrees Conferred by Research Tier and Academic Year (2020-2023)
 # By Lily Gates
+
 This stacked bar graph visualizes the count of doctoral degrees conferred across different academic years (2020–2023), broken down by research tier. The research tiers are represented by three categories: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The bars for each academic year are stacked to show the distribution of doctoral degrees within each research tier, allowing for an understanding of how the number of degrees varies across tiers and over time. The y-axis represents the raw count of doctoral degrees, and the x-axis represents the academic years.
 
 In general, the number of doctoral degrees conferred by R2 institutions and "Research Colleges and Universities" has remained relatively stable over the years. The smallest proportion is represented by "Research Colleges and Universities," with R2 institutions showing a modest amount. However, R1 institutions have experienced a significant increase in both the count and proportion of degrees conferred, especially between the 2020-2021 and 2021-2022 academic years. This highlights the growing trend of doctoral degree production within high-research activity institutions. The plot also includes a note that "Research Colleges and Universities" are research-focused but do not meet the criteria for R1 or R2 designation.
@@ -753,12 +697,11 @@ ggplot(long_combined_df, aes(x = academic_year, y = num_doc_degrees, fill = rese
 
 ```
 
-
 ------------------------------------------------------
-
 
 # Count of Institutions by Type and Research Activity Designation (2025) -- 2 graphs
 # by Lily Gates
+
 This set of grouped bar graphs displays the count of institutions by their type (public, private non-profit, and private for-profit) and their research activity designation (R1, R2, and Research Colleges and Universities) for the year 2025. They represent the same data, but the color-fill and x-axis variables are the opposite on both graphs.
 
 The majority of institutions with any research activity designation in this dataset are public institutions, with far fewer private non-profit and private for-profit institutions in each research activity category. Notably, the Research Colleges and Universities category is the only one that contains private for-profit institutions, with only one school in this group.
@@ -858,10 +801,11 @@ ggplot(plot_df_clean, aes(x = research_tier_2025, y = n, fill = public_private_p
 ```
 
 ------------------------------------------------------
+
 # Distribution of Spending for Fiscal Year 2022
 # By Colin Thompson
-This histogram displays the distribution of HERD spending across three fiscal years: 2021, 2022, and 2023. It highlights the range of research spending institutions report, with the peak around 0.05 billion dollars in fiscal year 2023, suggesting that many institutions are clustered in this spending range. Over the years, spending has gradually increased, especially in FY2023, indicating a growing trend in research investment. By examining this distribution, we can identify the most common spending ranges, which can help provide insight into what is considered typical or desirable for research spending. The graph also reveals the highest amounts of spending, useful for understanding the research budgets of institutions with the largest research investments.
 
+This histogram displays the distribution of HERD spending across three fiscal years: 2021, 2022, and 2023. It highlights the range of research spending institutions report, with the peak around 0.05 billion dollars in fiscal year 2023, suggesting that many institutions are clustered in this spending range. Over the years, spending has gradually increased, especially in FY2023, indicating a growing trend in research investment. By examining this distribution, we can identify the most common spending ranges, which can help provide insight into what is considered typical or desirable for research spending. The graph also reveals the highest amounts of spending, useful for understanding the research budgets of institutions with the largest research investments.
 
 ```{r}
 # Clean and reshape HERD data for all three fiscal years (FY21, FY22, FY23)
@@ -905,15 +849,16 @@ ggplot(combined_df_long, aes(x = herd_spending)) +
 
 
 ------------------------------------------------------
+
 # HERD Spending by Fiscal Year and Research Tier
 # By Lily Gates
+
 This histogram displays research spending (HERD) across three types of institutions for fiscal years 2021, 2022, and 2023:
 - Research Colleges and Universities (R Colleges): These institutions generally have the lowest research spending, concentrated on the left side of the graph.
 - Research 2 (R2): R2 institutions fall in the middle range, with some overlapping with both R Colleges and Research 1 institutions.
 - Research 1 (R1): These institutions have the highest research spending, appearing on the far right.
 
 The log scale on the x-axis highlights differences in spending, particularly at the higher end. The overlap between R2 and the other categories suggests that some R2 institutions have spending comparable to R1 or R Colleges.
-
 
 ```{r}
 # Filter out rows with NAs in research_tier_simple or herd_spending
@@ -944,7 +889,7 @@ combined_df_long <- combined_df_na_cleaned %>%
 
 # Plot with simplified legend labels and without NAs
 ggplot(combined_df_long, aes(x = herd_spending, fill = research_tier_simple)) +
-  geom_histogram(bins = 30, color = "black", alpha = 0.8, position = "identity") +
+  geom_histogram(bins = 30, color = "black", alpha = 0.6, position = "identity") +
   scale_x_log10(labels = scales::dollar_format(scale = 1e-9, suffix = "B")) +
   facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) +
   scale_fill_manual(
@@ -975,21 +920,76 @@ ggplot(combined_df_long, aes(x = herd_spending, fill = research_tier_simple)) +
 
 ```
 
-```{r}
-combined_df_na$research_tier_2025
-```
-
-
 ------------------------------------------------------
 
 # Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
+# Two graphs: Raw and Log Scale
 # By Mia Leandri
+
+
 This scatter plot visualizes the relationship between average research spending (from FY2021 to FY2023) and the average number of doctoral degrees awarded (2020–2023) across American higher education institutions.
 
 The x-axis shows average research spending in U.S. dollars, while the y-axis indicates the average number of doctoral degrees conferred. Institutions with greater research spending tend to award more doctoral degrees, illustrating a positive correlation between institutional investment in research and doctoral productivity.
 
 This visualization supports the analytical research question by highlighting how non-financial institutional characteristics (like research tier) correlate with tangible research outcomes such as doctoral degree production.
 
+# Log Scale - Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
+```{r}
+# Clean the spending column (convert to billions)
+clean_df_long <- combined_df %>%
+  mutate(
+    herd_avg_fy21_to_fy23_billions = herd_avg_fy21_to_fy23 / 1e9  # Convert to billions
+  )
+# Rename tiers for cleaner display
+clean_df_long <- clean_df_long %>%
+  mutate(research_tier_2025 = case_when(
+    grepl("Research 1", research_tier_2025) ~ "Research 1 (R1)",
+    grepl("Research 2", research_tier_2025) ~ "Research 2 (R2)",
+    TRUE ~ "Research Colleges and Universities"
+  ))
+
+# Filter out rows where y-values are <= 0
+clean_df_long_filtered <- clean_df_long %>%
+  filter(avg_num_doc_degrees_2020_2023 > 0)
+
+# Scatter plot using log10 scales with a lower limit for the y-axis
+ggplot(clean_df_long_filtered, aes(
+  x = herd_avg_fy21_to_fy23_billions,
+  y = avg_num_doc_degrees_2020_2023,
+  color = research_tier_2025
+)) +
+  geom_point(alpha = 0.6, size = 1.2) +
+  scale_color_brewer(palette = "Set2") +
+  scale_x_log10(
+    labels = scales::label_dollar(scale = 1, suffix = "B"),
+    breaks = scales::log_breaks()
+  ) +
+  scale_y_log10(
+    breaks = scales::log_breaks(),
+    limits = c(1, NA)  # Set the lower limit of y-axis to 1
+  ) +
+  labs(
+    title = "Avg. Research Spending vs. Doctoral Degrees (2020–2023)",
+    x = "Avg. Research Spending (Log Scale, Billions USD)",
+    y = "Avg. Number of Doctoral Degrees\n(Log Scale)",
+    color = "Research Tier"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom",
+    legend.key.width = unit(1, "cm"),
+    legend.key.height = unit(0.5, "cm"),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  ) +
+  guides(color = guide_legend(ncol = 3))
+
+```
+
+
+# Raw Counts - Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
 ```{r}
 # Clean the spending column (remove $ and commas and convert to numeric)
 clean_df_long <- combined_df %>%
@@ -1012,7 +1012,7 @@ ggplot(clean_df_long, aes(
   y = avg_num_doc_degrees_2020_2023,
   color = research_tier_2025
 )) +
-  geom_point(alpha = 0.8, size = 1.25) +
+  geom_point(alpha = 0.5, size = 1.5) +
   scale_color_brewer(palette = "Set2") +
   scale_x_continuous(
     labels = scales::label_dollar(scale = 1, suffix = "B"),  # Format in billions
@@ -1045,7 +1045,9 @@ ggplot(clean_df_long, aes(
 
 # Distribution of Size and Residential Type by Research Type
 # By Mia Leandri
+
 This grouped bar chart displays the distribution of research-designated institutions (R1, R2, and Research Colleges and Universities) across different campus size and residential categories, focusing only on 4-year universities. Institutions are categorized by size (Very Small to Large) and residential character (Highly Residential to Primarily Nonresidential), providing a detailed look at how research activity is spread across different campus environments. The chart reveals trends in how institutional research tiers align with campus scale and student living dynamics, offering insights into the structural diversity of U.S. higher education.
+
 ```{r}
 # Clean and categorize the data
 clean_combined_df <- combined_df_na %>%
@@ -1114,8 +1116,6 @@ ggplot(clean_combined_df, aes(x = research_tier_2025, fill = research_tier_2025)
     plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
     plot.caption = element_text(size = 9, face = "italic", hjust = 1)
   )
-
-
 ```
 
 
