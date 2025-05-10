@@ -378,6 +378,8 @@ print(rows_with_na_names)
   * ~3 sentence summary about visualization
 
 # SETTING THEME
+Good template to use in general for consistency
+Very similar to what TA Jay had shared
 ```{r}
 my_plot_theme <- theme(
   # Title settings with padding below
@@ -415,6 +417,7 @@ my_plot_theme <- theme(
 
 
 ------------------------------------------------------
+
 # 1. Distribution of U.S. institutions by Carnegie classification (2021)
 By Diamond Andy
 
@@ -526,6 +529,7 @@ combined_df_na_cleaned$subcategory <- factor(
 ```
 
 # 1a. Distribution of U.S. institutions by Carnegie classification (2021): Raw count
+
 ```{r}
 count_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(x = college_type, fill = subcategory)) + 
   geom_bar(position = "stack") +
@@ -544,54 +548,8 @@ count_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(x = college_type,
 count_collegetype_subcat
 ```
 
-# INTERACTABLE: Raw Count of Institutions by College Type and Subcategory
-
-```{r}
-# Step 1: Prepare the data with counts
-combined_df_na_cleaned_count <- combined_df_na_cleaned %>%
-  group_by(college_type, subcategory) %>%
-  summarise(count = n()) %>%
-  ungroup()
-
-# Step 2: Create the plot with counts for hover labels
-count_collegetype_subcat <- ggplot(combined_df_na_cleaned_count, 
-                                   aes(x = college_type, y = count, fill = subcategory, 
-                                       text = paste("Category:", subcategory, "<br>Count:", count))) + 
-  geom_bar(stat = "identity", position = "stack") +  # Use stat="identity" since we're passing counts directly
-  scale_fill_manual(values = color_palette_shaded) +
-  labs(
-    title = "Distribution of U.S. Institutions by Carnegie Classification (2021)",
-    subtitle = "Breakdown by college type, degree focus, and program size",
-    x = "",
-    y = "Count of Institutions",
-    caption = "College type determined by majority degrees conferred at the institution\nNote: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
-  ) +
-  guides(fill = "none") +  # Removes legend
-  my_plot_theme +
-  coord_flip()  # Flip the axes to make the bars horizontal
-
-# Step 3: Convert to interactive plotly plot with hover text
-interactive_plot <- ggplotly(count_collegetype_subcat, tooltip = "text") %>%
-  layout(
-    showlegend = FALSE,  # Removes legend in Plotly
-    title = list(x = 0, xanchor = "left"),  # Left-align the title in Plotly
-    annotations = list(
-      x = 0, y = -0.25,  # Position the caption further down
-      text = "College type determined by majority degrees conferred at the institution\nNote: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)",
-      showarrow = FALSE,
-      xref = 'paper', yref = 'paper',
-      xanchor = 'left', yanchor = 'top',
-      font = list(size = 10)
-    ),
-    margin = list(b = 150)  # Increase bottom margin for more space
-  )
-
-# Step 4: Display the interactive plot
-interactive_plot
-
-```
-
 # 1b. Distribution of U.S. institutions by Carnegie classification (2021): Proportion
+
 ```{r}
 perct_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(y = college_type, fill = subcategory)) + 
   geom_bar(position = "fill") +  # Normalize bars to 100% within each group
@@ -624,67 +582,7 @@ This graph visualizes the raw count and relative distribution of institutions by
 
 In general, there is a similar distribution to the raw count and overall percentage distribution between R1, R2, and RCU institutions. Interestingly, although there are more RCU institutions, R1 and R2 institutions confer the most doctoral degrees. 
 
-# Bar graphs are stacked on top of eachother
-```{r}
-# Prepare the data and drop NA
-plot_data <- combined_df_na %>%
-  filter(!is.na(research_tier_2025)) %>%
-  mutate(
-    research_tier_2025 = factor(
-      research_tier_2025,
-      levels = c(
-        "Research 1: Very High Research Spending and Doctorate Production",  # R1
-        "Research 2: High Research Spending and Doctorate Production",  # R2
-        "Research Colleges and Universities"  # RCPU
-      )
-    )
-  ) %>%
-  count(research_tier_2025) %>%
-  mutate(percentage = n / sum(n) * 100)
 
-# Raw count bar plot
-raw_count_plot <- ggplot(plot_data, aes(x = research_tier_2025, y = n)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
-  labs(
-    x = "",
-    y = "Raw Count"
-  ) +
-  my_plot_theme +  # Apply custom theme here
-  scale_x_discrete(labels = c(
-    "Research 1: Very High Research Spending and Doctorate Production" = "R1", 
-    "Research 2: High Research Spending and Doctorate Production" = "R2", 
-    "Research Colleges and Universities" = "RCU"
-  ))
-
-# Proportional bar plot (percentage)
-proportional_plot <- ggplot(plot_data, aes(x = research_tier_2025, y = percentage)) +
-  geom_bar(stat = "identity", fill = "lightblue") +
-  labs(
-    x = "",
-    y = "Percentage (%)"
-  ) +
-  my_plot_theme + 
-  scale_x_discrete(labels = c(
-    "Research 1: Very High Research Spending and Doctorate Production" = "R1", 
-    "Research 2: High Research Spending and Doctorate Production" = "R2", 
-    "Research Colleges and Universities" = "RCU"
-  ))
-
-# Combine the two plots and add a single title, subtitle, and caption
-combined_plot <- raw_count_plot + proportional_plot + 
-  plot_layout(guides = 'collect', heights = c(1, 1)) + 
-  plot_annotation(
-    title = "Distribution of U.S. institutions by research activity designation (2025)",
-    subtitle = "Raw count and relative proportion of R1, R2, and RCU institutions",
-    caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
-  )
-
-# Print the combined plot
-combined_plot
-
-```
-
-# Bar graphs are side by side
 ```{r}
 # Prepare the data and drop NA
 plot_data <- combined_df_na %>%
@@ -748,10 +646,11 @@ combined_plot <- raw_count_plot + proportional_plot +
 combined_plot
 
 ```
+
 ------------------------------------------------------
 
 #3. Average doctoral degrees by research tier (2020–2023)
-# By Lily Gates
+By Lily Gates
 
 This boxplot with beeswarm displays the distribution of average doctoral degrees awarded from 2020 to 2023 across three research activity designations: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The x-axis represents the average number of doctoral degrees awarded, while the y-axis categorizes institutions by their research tier. 
 
@@ -873,173 +772,6 @@ ggplot(long_combined_df, aes(x = academic_year, y = num_doc_degrees, fill = rese
 
 ```
 
-# Emphasize trend and log scale
-```{r}
-# Reshape the data and apply a small constant to avoid log issues
-long_combined_df_log <- long_combined_df %>%
-  mutate(
-    num_doc_degrees_log = ifelse(num_doc_degrees > 0, num_doc_degrees, NA) + 1  # Add 1 to avoid zero values, replace zero with NA
-  ) %>%
-  filter(!is.na(num_doc_degrees_log))  # Remove rows with NA after adding the constant
-
-# Create a stacked bar graph with log-transformed y-axis
-ggplot(long_combined_df_log, aes(x = academic_year, y = num_doc_degrees_log, fill = research_tier_2025)) +
-  geom_bar(stat = "identity", position = "stack", width = 0.8) +
-  
-  labs(
-    title = "Doctoral degrees conferred by research tier and academic year (2020–2023)",
-    subtitle = "Distribution of doctoral degrees awarded by R1, R2, and RCU institutions each year",
-    x = "Academic year",
-    y = "Log of total count (after adding 1)",
-    fill = "",
-    caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
-  ) +
-  
-  # Apply custom theme
-  my_plot_theme +  
-  theme(
-    plot.title = element_text(hjust = 0),
-    axis.text.x = element_text(angle = 0, hjust = 0.5),  # Center the x-axis labels
-    plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
-    legend.position = "right",  # Keep the legend on the right
-    legend.box = "vertical",
-    panel.grid.major = element_blank()
-  ) +
-  
-  # Adjust the legend and color guide
-  guides(
-    fill = guide_legend(ncol = 1)  # Set the legend to 1 column
-  ) +
-  
-  # Set the colors for the research tiers
-  scale_fill_manual(
-    values = c("Research 1" = "#4C79A1", "Research 2" = "#F1A340", "Research Colleges and Universities" = "#6D9D4B"),  # New colors
-    labels = c("R1", "R2", "RCU")  # Set the legend labels
-  ) +
-  
-  # Use a log scale for the y-axis
-  scale_y_continuous(
-    trans = "log10",  # Log scale for the y-axis
-    labels = scales::comma  # Adds commas to the y-axis labels for better readability
-  )
-
-```
-
-# Back to original
-```{r}
-ggplot(long_combined_df_log, aes(x = academic_year, y = num_doc_degrees_log, fill = research_tier_2025)) +
-  geom_bar(stat = "identity", position = "stack", width = 0.8) +
-
-  # Titles and axis labels
-  labs(
-    title = "Doctoral Degrees Conferred by Research Tier and Academic Year (2020–2023)",
-    subtitle = "Distribution of doctoral degrees awarded by R1, R2, and RCU institutions each year",
-    x = "Academic Year",
-    y = "Log10 of Total Doctoral Degrees (count + 1)",
-    fill = "",
-    caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
-  ) +
-
-  # Your custom plot theme
-  my_plot_theme +
-  theme(
-    plot.title = element_text(hjust = 0),
-    axis.text.x = element_text(angle = 0, hjust = 0.5),
-    plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
-    legend.position = "right",
-    legend.box = "vertical",
-    panel.grid.major = element_blank()
-  ) +
-
-  # Customize the legend appearance
-  guides(
-    fill = guide_legend(ncol = 1)
-  ) +
-
-  # Custom colors for each research tier
-  scale_fill_manual(
-    values = c(
-      "Research 1" = "#4C79A1",
-      "Research 2" = "#F1A340",
-      "Research Colleges and Universities" = "#6D9D4B"
-    ),
-    labels = c("R1", "R2", "RCU")
-  ) +
-
-  # Log scale with readable axis labels
-  scale_y_continuous(
-    trans = "log10",
-    labels = scales::comma
-  )
-
-```
-
-# All the numbers
-```{r}
-# Recreate the aggregated data (if not already created)
-aggregated_df <- long_combined_df %>%
-  group_by(academic_year, research_tier_2025) %>%
-  summarize(total_doc_degrees = sum(num_doc_degrees, na.rm = TRUE), .groups = "drop")
-
-total_sums <- long_combined_df %>%
-  group_by(academic_year) %>%
-  summarize(total_sum = sum(num_doc_degrees, na.rm = TRUE))
-
-# Plot with both sets of labels
-ggplot(aggregated_df, aes(x = academic_year, y = total_doc_degrees, fill = research_tier_2025)) +
-  geom_bar(stat = "identity", position = "stack", width = 0.8) +
-  
-  # Raw count labels inside each section (white)
-  geom_text(aes(label = scales::comma(total_doc_degrees)),
-            position = position_stack(vjust = 0.5),
-            color = "white", size = 5, fontface = "bold") +
-  
-  # Total sum labels on top of each bar (black)
-  geom_text(data = total_sums,
-            aes(x = academic_year, y = total_sum, label = paste0("Total: ", scales::comma(total_sum))),
-            inherit.aes = FALSE,
-            vjust = .5,
-            color = "black", size = 4.25, fontface = "bold",
-            nudge_y = 7) +
-  
-  labs(
-    title = "Doctoral Degrees Conferred by Research Tier and Academic Year (2020–2023)",
-    subtitle = "Distribution of doctoral degrees awarded by R1, R2, and RCU institutions each year",
-    x = "Academic Year",
-    y = "Total Doctoral Degree Count (log scale on bar height; numbers are raw totals)",
-    fill = "",
-    caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
-  ) +
-
-  my_plot_theme +
-  theme(
-    plot.title = element_text(hjust = 0),
-    axis.text.x = element_text(angle = 0, hjust = 0.5),
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
-    legend.position = "right",
-    legend.box = "vertical"
-  ) +
-
-  guides(fill = guide_legend(ncol = 1)) +
-
-  scale_fill_manual(
-    values = c("Research 1" = "#4C79A1", "Research 2" = "#F1A340", "Research Colleges and Universities" = "#6D9D4B"),
-    labels = c("R1", "R2", "RCU")
-  ) +
-
-  scale_y_continuous(
-    trans = "log10",
-    breaks = NULL,
-    labels = NULL,
-    expand = expansion(mult = c(0, 0.15))
-  )
-
-```
-
-
 ------------------------------------------------------
 
 #5. Count of institutions by research activity designation and institution type (2025)
@@ -1058,10 +790,10 @@ This analysis highlights key trends in how research activity designation relates
 ```{r}
 # Create plot with text labels on top of bars
 ggplot(plot_df_clean, aes(x = public_private_profit, y = n, fill = research_tier_2025)) +
-  geom_bar(position = "dodge", stat = "identity", width = 0.6) +  # Adjust width for clarity
+  geom_bar(position = "dodge", stat = "identity", width = 0.8) +  # Adjust width for clarity
   geom_text(
     aes(label = n),            # Add labels with the count
-    position = position_dodge(width = 0.6),   # Align text with bars
+    position = position_dodge(width = 0.8),   # Align text with bars
     vjust = -0.5,              # Adjust vertical position of labels above bars
     size = 3.5,                  # Set label text size
     color = "black",
@@ -1109,8 +841,8 @@ ggplot(plot_df_clean, aes(x = public_private_profit, y = n, fill = research_tier
 
 ------------------------------------------------------
 
-# Distribution of Spending for Fiscal Year 2022
-# By Colin Thompson
+# 6. Distribution of Spending for Fiscal Year 2022
+By Colin Thompson
 
 This histogram with a density curve displays the distribution of Higher Education Research and Development (HERD) spending across three fiscal years: 2021, 2022, and 2023. It highlights the range of research spending institutions report, with the peak around 0.05 billion dollars in fiscal year 2023, suggesting that many institutions are clustered in this spending range. Over the years, spending has gradually increased, especially in FY2023, indicating a growing trend in research investment. By examining this distribution, we can identify the most common spending ranges, which can help provide insight into what is considered typical or desirable for research spending. The graph also reveals the highest amounts of spending, useful for understanding the research budgets of institutions with the largest research investments.
 
@@ -1161,8 +893,8 @@ ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
 
 ------------------------------------------------------
 
-# HERD Spending by Fiscal Year and Research Tier
-# By Lily Gates
+# 7.Higher Education Research and Development (HERD) Spending by Fiscal Year and Research Tier
+By Lily Gates
 
 This histogram displays Higher Education Research and Development (HERD) spending across three types of institutions for fiscal years 2021, 2022, and 2023:
 
@@ -1204,7 +936,7 @@ color_mapping <- c(
 
 # Plot
 ggplot(combined_df_long, aes(x = herd_spending, color = research_tier_simple, fill = research_tier_simple)) +
-  geom_density(alpha = 0.3, size = .7) +
+  geom_density(alpha = 0.3, size = .8) +
   scale_x_log10(labels = dollar_format(scale = 1e-9, suffix = "B")) +
   facet_wrap(~ fiscal_year, nrow = 1) +
   scale_color_manual(values = color_mapping) +
@@ -1232,8 +964,8 @@ ggplot(combined_df_long, aes(x = herd_spending, color = research_tier_simple, fi
 
 ------------------------------------------------------
 
-# Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
-# By Mia Leandri
+# 8. Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
+By Mia Leandri
 
 
 This scatter plot visualizes the relationship between average research spending (from FY2021 to FY2023) and the average number of doctoral degrees awarded (2020–2023) across American higher education institutions.
@@ -1243,6 +975,7 @@ The x-axis shows average research spending in U.S. dollars, while the y-axis ind
 This visualization supports the analytical research question by highlighting how non-financial institutional characteristics (like research tier) correlate with tangible research outcomes such as doctoral degree production.
 
 # Log Scale - Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
+
 
 # Linear Regression with Confidence Interval
 Note: Curvature due to the log scaling
@@ -1273,7 +1006,7 @@ ggplot(clean_df_long_filtered, aes(
     data = clean_df_long_filtered,
     aes(x = herd_avg_fy21_to_fy23_billions, ymin = ci_lower, ymax = ci_upper),
     inherit.aes = FALSE,
-    fill = "gray30",
+    fill = "black",
     alpha = 0.3
   ) +
 
