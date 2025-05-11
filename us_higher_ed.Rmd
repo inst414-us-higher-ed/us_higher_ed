@@ -886,6 +886,9 @@ ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
     legend.position = "none",
     panel.grid.major = element_blank()
   )
+p <- ggplot(mtcars, aes(x = mpg, y = wt, color = factor(cyl))) +
+  geom_point(size = 4)
+colorblindr::cvd_grid(p)
 
 
 ```
