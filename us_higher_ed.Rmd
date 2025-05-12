@@ -573,6 +573,8 @@ perct_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(y = college_type,
 
 perct_collegetype_subcat
 
+#Please view graph in full screen
+
 ```
 
 ------------------------------------------------------
@@ -647,6 +649,7 @@ combined_plot <- raw_count_plot + proportional_plot +
 # Print the combined plot
 combined_plot
 
+#Please view graph in full screen
 ```
 
 ------------------------------------------------------
