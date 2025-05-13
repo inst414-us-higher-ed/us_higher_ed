@@ -556,7 +556,7 @@ count_collegetype_subcat
 perct_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(y = college_type, fill = subcategory)) + 
   geom_bar(position = "fill") +  # Normalize bars to 100% within each group
   scale_fill_manual(values = color_palette_shaded) +  # Your color-safe palette
-  scale_x_continuous(labels = label_percent(accuracy = 1)) +  # Show x-axis as %
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1))+  # Show x-axis as %
   labs(
     title = "Distribution of U.S. institutions by Carnegie classification (2021): Proportion",
     subtitle = "Percent of institutions within each classification category",
@@ -846,14 +846,15 @@ ggplot(plot_df_clean, aes(x = public_private_profit, y = n, fill = research_tier
 
 ------------------------------------------------------
 
-# 6. Distribution of Spending for Fiscal Year 2022
-By Colin Thompson
+# 6. Distribution of Higher Education Research and Development (HERD) spending
+# By Colin Thompson and Lily Gates
 
 This histogram with a density curve displays the distribution of Higher Education Research and Development (HERD) spending across three fiscal years: 2021, 2022, and 2023. It highlights the range of research spending institutions report, with the peak around 0.05 billion dollars in fiscal year 2023, suggesting that many institutions are clustered in this spending range. Over the years, spending has gradually increased, especially in FY2023, indicating a growing trend in research investment. By examining this distribution, we can identify the most common spending ranges, which can help provide insight into what is considered typical or desirable for research spending. The graph also reveals the highest amounts of spending, useful for understanding the research budgets of institutions with the largest research investments.
 
 ```{r}
 combined_df_long <- combined_df_na_cleaned %>%
   select(research_tier_2025, herd_fy21, herd_fy22, herd_fy23) %>%
+  mutate(across(starts_with("herd_fy"), ~ as.numeric(gsub(",", "", .)))) %>%  # Remove commas and convert to numeric
   pivot_longer(
     cols = starts_with("herd_fy"),
     names_to = "fiscal_year",
@@ -869,6 +870,7 @@ combined_df_long <- combined_df_na_cleaned %>%
     )
   )
 
+
 combined_df_long_cleaned <- combined_df_long %>%
   filter(herd_spending > 0)  # Remove rows with non-positive spending
 
@@ -880,6 +882,7 @@ ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
   facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) +  # Arrange FY21, FY22, FY23 side by side
   labs(
     title = "Distribution of Spending in Higher Education Research and Development (HERD)",
+    subtitle = "Displays the range and frequency of reported HERD spending across fiscal years 2021 to 2023",   
     x = "HERD Spending (Log Scale, in Billions)",
     y = "Density",
     caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
@@ -904,7 +907,7 @@ colorblindr::cvd_grid(p)
 # 7.Higher Education Research and Development (HERD) Spending by Fiscal Year and Research Tier
 By Lily Gates
 
-This histogram displays Higher Education Research and Development (HERD) spending across three types of institutions for fiscal years 2021, 2022, and 2023:
+This density plot displays Higher Education Research and Development (HERD) spending across three types of institutions for fiscal years 2021, 2022, and 2023:
 
 The log scale on the x-axis highlights differences in spending, particularly at the higher end. The overlap between R2 and the other categories suggests that some R2 institutions have spending comparable to R1 or R Colleges.
 
