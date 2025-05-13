@@ -1,7 +1,9 @@
-Written by Diamond Andy, Lily Gates, Mia Leandri, and Colin Thompsom  
-University of Maryland, Spring 2025
+# Visualizing Research University Diversity in the U.S.
+# _How Institutional Characteristics Align with Carnegie Classification Tiers_
 
-# Project Overview
+Written by Diamond Andy, Lily Gates, Mia Leandri, and Colin Thompsom  
+
+University of Maryland, Spring 2025
 
 ## Description
 Exploring the differences between American research colleges and universities through data visualization.
@@ -156,12 +158,29 @@ Not important, used for Carnegie's specific engagement and purposes, special pro
 # Usage and Notes
 
 ## Required Dependencies
-- tidyverse
-- readr
-- tidyr
-- dplyr
-- lubridate
-- stringr
+
+**Core Tidyverse & Data Manipulation**
+- tidyverse: A collection of R packages for data science, including ggplot2, dplyr, tidyr, readr, etc.
+- readr: For reading CSV files.
+- tidyr: For reshaping data.
+- dplyr: For data manipulation.
+- stringr: For string operations.
+- lubridate: For working with dates and times.
+
+**Visualization**
+- ggplot2: For static visualizations.
+- plotly: For interactive graphs.
+- ggbeeswarm: For beeswarm-style plots.
+- patchwork: For combining multiple ggplot objects.
+- RColorBrewer: For advanced color palettes.
+- scales: For transforming and formatting axes.
+
+**Development & Utility**
+- devtools: For development tools and installing custom packages.
 
 ## Future Steps
-TBD
+Looking ahead, our analysis could be extended through longitudinal tracking and predictive modeling. As updated Carnegie Classification data for the 2024–2025 cycle becomes available, we plan to compare it with our current findings to validate patterns and assess institutional shifts in research designation tiers. 
+
+Additionally, by applying machine learning models, we aim to forecast which colleges and universities are most likely to ascend in research tier rankings based on current institutional characteristics. Further work could also include clustering institutions by multidimensional features—such as degree focus, doctoral output, and enrollment type—to reveal nuanced typologies not captured by traditional tier labels.
+
+Lastly, building an interactive dashboard would allow stakeholders to explore these trends dynamically and inform strategic decisions in higher education policy and planning.
