@@ -62,6 +62,12 @@ Bulk Uncomment/Comment: Hightlight text --> "Code" -> "Comment/Uncomment Lines"
 # 
 # # Development Tools
 # install.packages("devtools")      # For installing development tools and palettes
+# install.packages("patchwork")
+# install.packages("scales")
+# install.packages("RColorBrewer")
+# install.packages("plotly")  # only once
+# install.packages("ggbeeswarm")
+# install.packages("viridis")
 ```
 
 ```{r}
@@ -85,6 +91,19 @@ library(scales)      # For formatting and transforming scales
 
 # Additional Utilities
 library(devtools)    # Used for development tools and installing additional palettes
+library(tidyverse)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(lubridate)  # for Datetime formatting
+library(stringr)  # for extracting URL
+library(patchwork)  # for putting multiple graphs on one fig
+library(scales) # for normalizing, log transform
+library(RColorBrewer)  # for color palettes
+library(plotly)  # for interactable graphs
+library(ggbeeswarm)  # for beeswarm graph
+library(devtools) # for color palettes
+
 ```
 
 ```{r}
@@ -384,6 +403,8 @@ ggsave("perct_collegetype_subcat.png", plot = perct_collegetype_subcat,
 dev.new(width = 14, height = 9)
 print(perct_collegetype_subcat)
 
+#Please view graph in full screen
+
 ```
 
 ------------------------------------------------------
@@ -520,7 +541,6 @@ ggsave("boxplot_avg_degrees.png", plot = boxplot_avg_degrees,
 # Open a new graphics window to display graph
 dev.new(width = 14, height = 9)
 print(boxplot_avg_degrees)
-
 ```
 
 ------------------------------------------------------
@@ -722,6 +742,7 @@ color_mapping <- c(
   "RCU" = "#009E73"  # green
 )
 
+
 # Plot
 herd_density <- ggplot(combined_df_long, aes(x = herd_spending, color = research_tier_simple, fill = research_tier_simple)) +
   geom_density(alpha = 0.3, size = .8) +
@@ -730,6 +751,14 @@ herd_density <- ggplot(combined_df_long, aes(x = herd_spending, color = research
   facet_wrap(~ fiscal_year, nrow = 1) +
   scale_color_manual(values = color_mapping) +
   scale_fill_manual(values = color_mapping) +
+
+# Plot with the cleaned data
+ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
+  geom_histogram(aes(y = ..density..), bins = 20, color = "black", fill = viridis(1, option = "D"), alpha = 0.7, size = 0.3) +
+  geom_density(color = viridis(1, option = "C"), size = 1, linetype = "solid") +
+  scale_x_log10(labels = scales::dollar_format(scale = 1e-9, suffix = "B")) +
+  facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) +  # Arrange FY21, FY22, FY23 side by side
+
   labs(
     title = "Higher Education Research and Development (HERD) spending by fiscal year and research tier",
     x = "HERD Spending (Log Scale, in Billions)",
@@ -745,6 +774,9 @@ herd_density <- ggplot(combined_df_long, aes(x = herd_spending, color = research
     legend.direction = "horizontal",
     panel.grid.major = element_blank()
   )
+p <- ggplot(mtcars, aes(x = mpg, y = wt, color = factor(cyl))) +
+  geom_point(size = 4)
+colorblindr::cvd_grid(p)
 
 #herd_density
 
@@ -957,5 +989,4 @@ ggsave("scatter_corr_degrees_spending.png", plot = scatter_corr_degrees_spending
 # Display the plot
 dev.new(width = 14, height = 9)
 print(scatter_corr_degrees_spending)
-
 ```
