@@ -1,49 +1,32 @@
 ---
-title: "us_higher_ed"
-output: html_document
-name: Diamond Andy, Lily Gates, Mia Leandri, Colin Thompson
-date: 05/09/2025
+title: "Visualizing Research University Diversity in the U.S."
+subtitle: "How Institutional Characteristics Align with Carnegie Classification Tiers"
+author: "INST 462 (0101) - Diamond Andy, Lily Gates, Mia Leandri, Colin Thompson"
+date: "05/13/2025"
+output:
+  html_document: default
+  #pdf_document: default
+  #word_document: default
 ---
 
------------------------------------------------
-# PROJECT OVERVIEW
------------------------------------------------
+# Visualizing Research University Diversity in the U.S.
+## _How Institutional Characteristics Align with Carnegie Classification Tiers_
 
-# Overview of Project
+### Description of Project
 Exploring the differences between American research colleges and universities through data visualization.
 
------------------------------------------------
-# RESEARCH QUESTIONS/TOPICS, AND NARRATIVE
-# Communications - Mia Leandri
------------------------------------------------
+### Research Question/Topic
+1. Descriptive and Comparative Question  
+**How do different tiered American research colleges and universities compare in terms of location, admissions, academic offerings, doctoral degrees awarded, and other institutional characteristics?**
 
-## Research Question/Topic
-1. Descriptive and Comparative Question
-**How do institutional characteristics compare between how different American research colleges and universities are classified ("R1", "R2", "Research Colleges and Universities (Unranked)")**
-  * Exploring features, such as the location, admissions, academic offerings, and doctoral degrees awarded
+2. Analytical and Inferential Question  
+**How do other institutional characteristics, besides financial expenditures, predict or correlate with research designation tiers among American colleges and universities?**
 
-2. Analytical and Inferential Question
-**How do institutional characteristics predict or correlate with research designation tiers among American colleges and universities?**
-  * Exploring features, such as the location, admissions, academic offerings, and doctoral degrees awarded
-
-## Research Narrative
-Our chosen datasets should be well-suited to address both our descriptive/comparative and analytical/inferential research questions. For descriptive and comparative purposes, we have access to data on most of the key factors we aim to explore, allowing us to describe and compare differences across universities. For instance, we can analyze the geographic distribution of institutions by state and city, admissions data on who is being admitted, academic offerings across universities, and the number of doctoral degrees awarded at each institution. By combining this information with institutional research spending data from the `carnegie_spending_doctorate_awards` dataset and basic school characteristics from `carnegie_classification_stats`, we can compare which factors may contribute to higher research spending across institutions.
-
-For our analytical and inferential questions, we can use the data in several ways to explore what factors—beyond financial expenditures—are associated with a higher research classification. For example, admissions and academic offerings data, when examined alongside research classifications, may help us determine whether specific academic or demographic characteristics play a role in an institution’s likelihood of achieving Research 1 or Research 2 status. This approach goes beyond simply examining research spending and instead investigates what factors may influence institutional research standing.
-
-Our primary audience includes college and university administrators. We hope this analysis will be especially useful for those seeking to understand which institutional characteristics are associated with higher research rankings. For instance, if institutions with more diverse admissions profiles or broader academic offerings tend to rank higher in research classifications, administrators at other institutions may consider incorporating similar changes. This information could support strategic planning and resource allocation to strengthen their institutions’ research profile.
-
------------------------------------------------
-# DATA AND RESEARCH SOURCES
-# Data Enginners - Colin Thompson (finding, describing) and Lily Gates (cleaning, combining datasets)
------------------------------------------------
-
-## Data and Research Sources Overview
-Cleaned CSV versions of the "Carnegie Classification of Institutions of Higher Education"
-https://carnegieclassifications.acenet.edu/
+### Data and Research Sources
+The `README.md` on the GitHub repository contains a more detailed overview of the data.
 
 `carnegie_spending_doctorate_awards`
-(See c`arnegie_research_activity_desig_factsheet.pdf` for more info)
+(See `carnegie_research_activity_desig_factsheet.pdf` for more info)
 * School
 * Location (City, State)
 * Classification (R1, R2, Other) — From 2021 and 2025
@@ -60,139 +43,54 @@ https://carnegieclassifications.acenet.edu/
 * Enrollment information
 * Classification on tier (R1, R2, Other)
 
-## Description of Variables
-* `classification_df` is from the `carnegie_classification_stats`
-* `spending_df` is from the `carnegie_spending_doctorate_awards`
-
-**Basic School Information**
-NAME
-- `unitid` - unique ID number
-- `name.x` - name of school
-    - orig from `classification_df`
-    - NOTE: is later renamed to `name` while `name.y` is dropped
-- `name.y` - name
-    - orig from `spending_df`
-- `core_name` - name of the main university (e.g., "University of Maryland")
-    - orig from the `classification_df`
-- `spec_name` - name of the specific campus/satellite (e.g., "College Park")
-    - orig from the `classification_df`
-
-SCHOOL TYPE 
-- `public_private_profit` - public, private (for-profit, non-profit)
-    - orig from `classification_df`
-
-SCHOOL LOCATION
-- `city` - city
-- `state` - state abbreviation
-- `size_setting` - size, 4-year vs. graduate/professional, how residential the school is
-    - orig from `classification_df`
-
-**Enrollment and Admissions**
-- `level` - four or more years as opposed to associate degree 2-year programs such as community colleges
-    - orig from `classification_df`
-- `enrollment_profile` -  distribution of undergrad vs. graduate students
-    - orig from `classification_df`
-- `size_setting` - student body population 
-    - orig from `classification_df`
-      - *size*:
-        - very small (less than 999)
-        - small (1000 to 2999)
-        - medium (3000 to 9999)
-        - large (10000 or greater)
-      - *residential*: percentage of living on-campus students
-        - primarily non-res: less than 25% FT students
-        - primarily residential: 25 to 50% FT students
-        - highly residential: more than 50% FT students
-- `undergrad_profile` - for 4-year universities
-    - orig from `classification_df`
-        - *full/part-time*:
-            - higher part-time (over 40% PT)
-            - medium-full-time (21-39% PT)
-            - full-time (less than 20% PT)
-      - *selective*:
-        - inclusive (ACT equivalent <19)
-        - more selective (ACT equivalent 19 to 23)
-        - selective (ACT equivalent over 23)
-      - *transfer in*:
-        - lower (<20%)
-        - higher (greater than 20%)
-
-**Research Classification Ranking**
-- `research_tier_2025` - 2025 tier ranking 
-    - orig from `classification_df`
-- `classific_2021` - 2021 tier ranking
-    - orig from `spending_df`
-- `classific_2025` - 2025 tier ranking
-    - orig from `spending_df`
-
-**Finances**  
-orig from `spending_df`
-- `herd_fy21` - 2021 fiscal year expenses on research
-- `herd_fy22` - 2022 fiscal year expenses on research
-- `herd_fy23` - 2023 fiscal year expenses on research
-- `herd_avg_fy21_to_fy23` - Average expenses on research from 2021 to 2023
-
-**Types of Academic Programs and Degrees Offered**  
-orig from `classficiation_df`
-- `degree_focuses` - degree level and academic focus overview
-    - *top degree level offered*: bacc, masters, doctoral, special, tribal
-    - *focus*: arts and science, diverse, engineering and tech, medical, other health, special focus, research, or NULL
-    - *size*: of program (only for Masters Universities)
-    - *research activity*: only for Doctoral Universities
-- `undergrad_program` - distribution of undergrad degrees in certain academic fields
-    - *dominant subj*:
-"arts and sciences" OR "professions" OR NULL
-    - *balanced vs plus vs focus*:
-measured by the percentage of bachelor's degrees awarded in arts and sciences (rather than professions)
-    - *graduate degree coexistence*:
-percentage of graduate degrees in undergraduate fields
-        - e.g., a BS in Computer Science AND a MS or PHD in Computer Science is also offered at the same school
-        - measured by "none" (0%) OR "some" (0 to 50%) or "high" (greater than 50%)
-- `grad_program` - distribution of grad degrees in certain academic fields
-    - *program level*: undergrad only, postbac, research doctorate, NULL
-    - *single or comprehensive*: multiple subject fields or single subject
-    - *focus*: education, business, humanities, STEM, professional
-      
-**Research Doctorates Awarded**  
-orig from  `spending_df`
-
-Number of doctoral research degrees conferred for...
-- `num_doc_degrees_2020_2021` - the 2020-2021 school year
-- `num_doc_degrees_2021_2022` - the 2021-2022 school year
-- `num_doc_degrees_2022_2023` - the 2022-2023 school year
-
-**Miscellaneous**  
-orig from `classification_df`  
-Not important, used for Carnegie's specific engagement and purposes, special program with Carnegie
-- `community_engage` - whether they were classified by Carnegie
-- `leadership_for_public_prax` - whether they were classified by Carnegie
-
-# Narrative Overview
-The datasets we intend to use for this project are `carnegie_classification_stats` and `carnegie_spending_doctorate_awards`, both sourced from the Carnegie Classification of Institutions of Higher Education—a framework maintained by the American Council on Education and the Carnegie Foundation for the Advancement of Teaching. The purpose of this classification system is to provide a standardized way of categorizing U.S. colleges and universities based on a range of institutional characteristics, including degree offerings, enrollment profiles, and research activity.
-
-The `carnegie_classification_stats` dataset includes a wide range of institutional data. It provides general school information such as the official name of the university and the name of specific campuses—e.g., the University of Maryland as the flagship institution and College Park as its campus. It also classifies institutions by their sector, indicating whether they are public, private non-profit, or private for-profit. Additional variables detail the types of degrees offered, from bachelor’s to doctoral levels, as well as the institution’s academic focus—such as liberal arts, professional fields, or STEM. The dataset includes enrollment profiles, offering insight into whether an institution primarily serves undergraduate or graduate students, and whether its student body is full-time, part-time, or transfer-heavy. It also captures information about the size of the institution, the residential setting, and undergraduate selectivity. Importantly, it includes the university's most recent research classification label (e.g., Research 1 or Research 2) as of 2025.
-
-The `carnegie_spending_doctorate_awards` dataset complements this information by including similar institutional identifiers and research classifications for 2021 and 2025. It also tracks financial data, reporting annual research expenses for fiscal years 2021 through 2023. This provides a window into how institutions allocate resources toward research over time. Additionally, this dataset documents the number of research doctorates awarded by each institution in three consecutive academic years: 2020–2021, 2021–2022, and 2022–2023. Together, these two datasets allow for a comprehensive analysis of how institutional characteristics, research activity, and academic program offerings intersect across the higher education landscape in the United States.
-
------------------------------------------------
 # CODE BEGINS
------------------------------------------------
+Bulk Uncomment/Comment: Hightlight text --> "Code" -> "Comment/Uncomment Lines"
 
-# Installing Packages
-Note: Only have to do 1 time
 ```{r}
+# Core Tidyverse and Dependencies
+# install.packages("tidyverse")     # Includes ggplot2, dplyr, tidyr, readr, etc.
+# install.packages("lubridate")     # For working with dates and times
+# install.packages("stringr")       # For string operations
+# 
+# # Visualization
+# install.packages("ggplot2")       # Core plotting package (also part of tidyverse)
+# install.packages("plotly")        # For interactive graphs
+# install.packages("ggbeeswarm")    # For beeswarm plots
+# install.packages("patchwork")     # For combining ggplot2 objects
+# install.packages("RColorBrewer")  # For advanced color palettes
+# install.packages("scales")        # For axis formatting and transformations
+# 
+# # Development Tools
+# install.packages("devtools")      # For installing development tools and palettes
 # install.packages("patchwork")
 # install.packages("scales")
 # install.packages("RColorBrewer")
 # install.packages("plotly")  # only once
 # install.packages("ggbeeswarm")
 # install.packages("viridis")
-
 ```
 
-
-# Importing Libraries
 ```{r}
+# Importing Libraries
+
+# Core Data Science & Tidyverse Packages
+library(tidyverse)   # Includes ggplot2, dplyr, tidyr, readr, stringr, etc.
+library(readr)       # For reading CSV files
+library(tidyr)       # For reshaping data
+library(dplyr)       # For data manipulation
+library(stringr)     # For string operations
+library(lubridate)   # For working with dates and times
+
+# Visualization Packages
+library(ggplot2)     # For creating static data visualizations
+library(plotly)      # For interactive graphs
+library(ggbeeswarm)  # For beeswarm-style plots
+library(patchwork)   # For combining multiple ggplot figures
+library(RColorBrewer)  # For color palettes
+library(scales)      # For formatting and transforming scales
+
+# Additional Utilities
+library(devtools)    # Used for development tools and installing additional palettes
 library(tidyverse)
 library(readr)
 library(tidyr)
@@ -205,95 +103,43 @@ library(RColorBrewer)  # for color palettes
 library(plotly)  # for interactable graphs
 library(ggbeeswarm)  # for beeswarm graph
 library(devtools) # for color palettes
+
 ```
 
-# Reading in Data
 ```{r}
+# Reading in Data
 classification_stats <- read_csv("carnegie_classification_stats.csv")
-
 spending_doctorate_awards <- read_csv("carnegie_spending_doctorate_awards.csv")
 ```
 
-# Preview and Summarize Data
-```{r}
-#head(classification_stats)
-colnames(classification_stats)
-summary(classification_stats)
-
-head(spending_doctorate_awards)
-colnames(spending_doctorate_awards)
-summary(spending_doctorate_awards)
-```
-
-------------------------------------------------------
 # CREATING DATAFRAMES
-------------------------------------------------------
 
+```{r}
 # Convert Both Imported CSVs to Dataframes
-```{r}
 classification_df <- data.frame(classification_stats)
-class(classification_df)
-
 spending_df <- data.frame(spending_doctorate_awards)
-class(spending_df)
-colnames(spending_df)
 ```
 
-------------------------------------------------------
-# CLEANING DATA
-------------------------------------------------------
-
-# Convert and Ensure Financial Values are Numeric
-For `spending_df` columns herd_fyXX
-Replace any missing values with NA
 
 ```{r}
-# Clean and convert HERD columns to integer
-spending_df <- spending_df %>%
-  mutate(
-    herd_fy21 = as.integer(parse_number(as.character(herd_fy21))),
-    herd_fy22 = as.integer(parse_number(as.character(herd_fy22))),
-    herd_fy23 = as.integer(parse_number(as.character(herd_fy23))),
-    herd_avg_fy21_to_fy23 = as.integer(parse_number(as.character(herd_avg_fy21_to_fy23)))
-  )
-
-# Inspect rows where parsing failed (NAs introduced)
-problematic_rows <- spending_df %>%
-  filter(if_any(c(herd_fy21, herd_fy22, herd_fy23, herd_avg_fy21_to_fy23), is.na)) %>%
-  distinct()
-
-# View problematic rows – check for Johns Hopkins, Kent State, or other issues
-print(problematic_rows)
-
-```
-
-
 # Combine Both into Single Dataframe
 # Note: has name.x and name.y
-- This is because the `classification_df` and `spending_df` both have "name" but it was raising an error: "Error: unexpected symbol" for that column when trying to do a full join
+# - This is because the `classification_df` and `spending_df` both have "name" but it was raising an error: "Error: unexpected symbol" for that column when trying to do a full join
 
-```{r}
-# Confirming column names on what to join by
-colnames(classification_df)
-colnames(spending_df)
-```
-
-```{r}
 # Perform full join on 'unitid'
 combined_df <- full_join(classification_df, spending_df, by = "unitid")
 
 # Confirm join and notice duplicate column names
-colnames(combined_df)
+#colnames(combined_df)
 ```
 
-# Debugging - Checking for Duplicate Values in Duplicate Column Names
-(name, city, state each have x and y values)
-The `.x` refers to the column coming from `classification_df`
-The `.y` refers to the column coming from `spending_df`
+# CLEANING DATA
 
 ```{r}
-
-# Total issues = 13
+# Debugging - Checking for Duplicate Values in Duplicate Column Names
+# (name, city, state each have x and y values)
+# The `.x` refers to the column coming from `classification_df`
+# The `.y` refers to the column coming from `spending_df`
 
 # Duplicate School Names (there are 12)
 combined_df %>%
@@ -317,13 +163,12 @@ mismatched <- combined_df %>%
 
 # View the mismatched rows
 print(mismatched)
-
 ```
 
-# Cleaning Data -- Fill any missing values with "NA"
 ```{r}
-# Function to replace NULL with NA
+# Cleaning Data -- Fill any missing values with "NA"
 
+# Function to replace NULL with NA
 replace_null_with_na <- function(x) {
   if (is.list(x)) {
     # Apply recursively if it's a list (to handle nested data frames)
@@ -340,102 +185,80 @@ combined_df_na <- combined_df %>%
   mutate(across(everything(), replace_null_with_na))
 
 # View the result
-summary(combined_df_na)
+#summary(combined_df_na)
 ```
 
-# Debugging - Checking which columns have missing values (NA)
-Note:
-`spec_name` may have many values and that is okay, it is optional
-(e.g., University of Maryland, College Park would have "College Park" as the spec_name", but John's Hopkins only has one campus, so there is no "main campus" or any other special name)
-
 ```{r}
+# Debugging - Checking which columns have missing values (NA)
+# Note: `spec_name` may have many values and that is okay, it is optional (e.g., University of Maryland, College Park would have "College Park" as the spec_name", but John's Hopkins only has one campus, so there is no "main campus" or any other special name)
+# - Should be referring to Penn State, with 2 different unitid AND different school name spelling
+
 # Display a table of the count of missing values (NAs) per column
 missing_data <- combined_df_na %>% 
   summarise(across(everything(), ~ sum(is.na(.)))) %>%
   gather(key = "column_name", value = "NAs")
 
+# Show columns
 print(missing_data)
 
+# Show rows for any NA values, EXCEPT for spec_name (as this is a common column with NA)
+rows_with_na_except_spec_name <- combined_df_na %>%
+  filter(if_any(-all_of("spec_name"), is.na))
+
+print(rows_with_na_except_spec_name)
 ```
 
-
-```{r}
-
-# Filter rows where name.x or name.y is NA, and select unitid, name.x, name.y
-# Should be referring to Penn State, with 2 different unitid AND different school name spelling
-
-rows_with_na_names <- combined_df_na %>%
-  filter(is.na(name.x) | is.na(name.y)) %>%
-  select(unitid, name.x, name.y, city.x, city.y)
-
-print(rows_with_na_names)
-```
-
-------------------------------------------------------
 # VISUALIZATIONS
-------------------------------------------------------
 
-# Visualization Name (e.g., Research Expenses from 2020 to 2023)
-  * Description about what variables you are measuring
-  * ~3 sentence summary about visualization
+### Note: All graphs will be displayed in a pop-up window when code is run. Graphs will also be saved as a .png in the current working directory.
 
-# SETTING THEME
-Good template to use in general for consistency
-Very similar to what TA Jay had shared
 ```{r}
+# Template Theme for All Plots (for consistency)
+
 my_plot_theme <- theme(
   # Title settings with padding below
-  plot.title = element_text(size = 15, hjust = 0, face = "bold", margin = margin(b = 10)),
+  plot.title = element_text(size = 24, hjust = 0, face = "bold", margin = margin(b = 10)),
 
   # Subtitle settings with padding below
-  plot.subtitle = element_text(size = 13, hjust = 0, face = "italic", margin = margin(b = 10)),
+  plot.subtitle = element_text(size = 18, hjust = 0, face = "italic", margin = margin(b = 10)),
 
   # Caption settings with padding above
-  plot.caption = element_text(size = 9, hjust = 0, color = "gray10", margin = margin(t = 10)),
+  plot.caption = element_text(size = 12, hjust = 0, color = "black", margin = margin(t = 10)),
 
   # Axis titles and text settings
-  axis.title = element_text(size = 12),
-  axis.text.x = element_text(size = 10, color = "gray10"),
-  axis.text.y = element_text(size = 10, color = "gray10"),
+  axis.title = element_text(size = 16, color = "black"),
+  axis.text.x = element_text(size = 14, color = "black"),
+  axis.text.y = element_text(size = 14, color = "black"),
+  strip.text = element_text(size = 18, face = "bold"),  # Sections in a faceted graph
 
   # Panel settings
   panel.grid.minor = element_blank(),
   panel.grid.major = element_blank(),
-  axis.line = element_line(color = "gray10", size = 0.7),
+  axis.line = element_line(color = "black", linewidth = 1.25),
   panel.background = element_rect(fill = "white", color = NA),
   plot.background = element_rect(fill = "white", color = NA),
 
-  # Legend settings (no position specified, using default)
-  legend.title = element_text(size = 12, margin = margin(b = 5)),
-  legend.text = element_text(size = 10),
-  legend.key.size = unit(0.8, "cm"),
-  legend.spacing.y = unit(0.4, "cm"),
+  # Legend settings
+  legend.title = element_text(size = 16, margin = margin(b = 5)),
+  legend.text = element_text(size = 14),
+  legend.key.size = unit(1, "cm"),
+  legend.spacing.y = unit(0.6, "cm"),
 
-  # Padding around the entire plot
-  plot.margin = margin(10, 10, 10, 10)  # Adjust margin if necessary
+  # Plot margins
+  plot.margin = margin(15, 15, 15, 15)
 )
-
 ```
 
+## 1. Distribution of U.S. institutions by Carnegie classification (2021)
+### By Diamond Andy and Lily Gates
 
-------------------------------------------------------
+This bar graph represents the number of institutions that were categorized under the 2021 Carnegie research classification tier. Comparing how many universities fall into each group and highlights the overall distribution of research in U.S. Institutions. This visualization also helps emphasize the tiers that are less common. Offering a clear and concise view of how universities are distributed across different levels of research activity. The Carnegie Classification system is a widely used framework in the U.S. for categorizing institutions based on their degree-granting activity and research intensity, particularly at the doctoral level.
 
-# 1. Distribution of U.S. institutions by Carnegie classification (2021)
-By Diamond Andy
+### 1a. Distribution of U.S. institutions by Carnegie Classification (2021): Raw count
 
-Number of Institutions by Research Classification (2021)
-This bar graph compares the distribution of U.S. institutions across different research classification tiers as defined by the Carnegie Classification system for 2021. The two versions of the graph provide both raw counts and relative proportions of institutions within each category. The visualization highlights how many universities are in each group, offering insight into the overall distribution of research across the U.S. higher education landscape. It also emphasizes the tiers that are less common, shedding light on the less-represented categories.
-
-Carnegie Classification Overview:
-* **Doctoral Universities:** Institutions that confer at least 20 research doctorates or 30 professional doctorates annually.
-* **Master’s Colleges and Universities:** Institutions that do not meet the doctoral threshold but award at least 50 master’s degrees per year.
-* **Baccalaureate Colleges:** Institutions primarily offering bachelor's degrees, falling below the master’s degree threshold.
-* **Special Focus Institutions:** Institutions that concentrate the majority of their degrees in a single academic or professional field.
-* **Tribal Colleges:** Institutions affiliated with the American Indian Higher Education Consortium, focusing on serving Indigenous communities.
-
-
-# Filter Values
 ```{r}
+# Filter Values
+
 # Recode main college type and subcategory
 combined_df_na_cleaned <- combined_df_na %>%
   mutate(
@@ -467,10 +290,9 @@ combined_df_na_cleaned <- combined_df_na %>%
   ) %>%
   filter(!is.na(college_type) & !is.na(subcategory))
 
-```
 
 # Color Palette 
-```{r}
+
 color_palette_shaded <- c(
   # GRAYS for Baccalaureate
   "Baccalaureate: Diverse Fields" = "#B0B0B0",   # Light gray
@@ -494,13 +316,11 @@ color_palette_shaded <- c(
   "Special Focus: Other Institutions" = "#3F007D",    # Very dark purple
 
   # BROWN for Tribal Colleges
-  "Tribal Colleges" = "#8B4513"  # Saddle brown (color-blind safe & distinct)
+  "Tribal Colleges" = "#8B4513"  # Saddle brown
 )
 
-```
-
 # Set factored levels
-```{r}
+
 # Set factor levels for custom order of college_type
 combined_df_na_cleaned$college_type <- factor(
   combined_df_na_cleaned$college_type,
@@ -528,16 +348,13 @@ combined_df_na_cleaned$subcategory <- factor(
   ))
 )
 
-```
+# Plot
 
-# 1a. Distribution of U.S. institutions by Carnegie classification (2021): Raw count
-
-```{r}
 count_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(x = college_type, fill = subcategory)) + 
   geom_bar(position = "stack") +
   scale_fill_manual(values = color_palette_shaded) +
   labs(
-  title = "Distribution of U.S. institutions by Carnegie classification (2021): Raw count",
+  title = "Distribution of U.S. institutions by Carnegie Classification (2021): Raw count",
   subtitle = "Breakdown by college type, degree focus, and program size",
     x = "",
     y = "Count",
@@ -547,18 +364,24 @@ count_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(x = college_type,
   my_plot_theme +
   coord_flip()
 
-count_collegetype_subcat
+# Save the plot
+ggsave("count_collegetype_subcat.png", plot = count_collegetype_subcat, 
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Open a new graphics window to display graph
+dev.new(width = 14, height = 9)
+print(count_collegetype_subcat)
 ```
 
-# 1b. Distribution of U.S. institutions by Carnegie classification (2021): Proportion
+### 1b. Distribution of U.S. institutions by Carnegie Classification (2021): Proportion
 
 ```{r}
 perct_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(y = college_type, fill = subcategory)) + 
   geom_bar(position = "fill") +  # Normalize bars to 100% within each group
   scale_fill_manual(values = color_palette_shaded) +  # Your color-safe palette
-  scale_x_continuous(labels = label_percent(accuracy = 1)) +  # Show x-axis as %
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1))+  # Show x-axis as %
   labs(
-    title = "Distribution of U.S. institutions by Carnegie classification (2021): Proportion",
+    title = "Distribution of U.S. institutions by Carnegie Classification (2021): Proportion",
     subtitle = "Percent of institutions within each classification category",
     x = "Percentage (%)",
     y = "",
@@ -571,7 +394,14 @@ perct_collegetype_subcat <- ggplot(combined_df_na_cleaned, aes(y = college_type,
   ) +
   guides(fill = guide_legend(ncol = 1, title = ""))
 
-perct_collegetype_subcat
+
+# Save the plot
+ggsave("perct_collegetype_subcat.png", plot = perct_collegetype_subcat, 
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Open a new graphics window to display graph
+dev.new(width = 14, height = 9)
+print(perct_collegetype_subcat)
 
 #Please view graph in full screen
 
@@ -579,13 +409,17 @@ perct_collegetype_subcat
 
 ------------------------------------------------------
 
-# 2. Distribution of U.S. institutions by research activity designation (2025)
-By Lily Gates
+## 2. Distribution of U.S. institutions by research activity designation (2025)
+### By Lily Gates
 
 This graph visualizes the raw count and relative distribution of institutions by their research activity designation in 2025. The categories displayed include "Research Colleges and Universities", "Research 1", and "Research 2". Data excludes institutions without a research designation.
 
-In general, there is a similar distribution to the raw count and overall percentage distribution between R1, R2, and RCU institutions. Interestingly, although there are more RCU institutions, R1 and R2 institutions confer the most doctoral degrees. 
+The graph shows the both the raw count and relative distribution of institutions across three research activity categories: Research Colleges and Universities (RCA), Research 1 (R1), and Research 2 (R2).
+  - RCA institutions spend at least $2.5 million on research annually but do not meet the criteria for R1 or R2.
+  - R1 institutions spend at least $50 million on research and produce at least 70 research doctorates annually
+  - R2 institutions spend at least $5 million and produce at least 20 research doctorates.
 
+In general, there is a similar distribution to the raw count and overall percentage distribution between R1, R2, and RCU institutions. Interestingly, although there are more RCU institutions, R1 and R2 institutions confer the most doctoral degrees. 
 
 ```{r}
 # Prepare the data and drop NA
@@ -633,7 +467,7 @@ proportional_plot <- ggplot(plot_data, aes(x = research_tier_2025, y = percentag
   ))
 
 # Combine the two plots side by side using patchwork
-combined_plot <- raw_count_plot + proportional_plot + 
+school_distrib_combined_plot <- raw_count_plot + proportional_plot + 
   plot_layout(guides = 'collect', widths = c(1, 1)) + 
   plot_annotation(
     title = "Distribution of U.S. institutions by research activity designation (2025)",
@@ -646,16 +480,19 @@ combined_plot <- raw_count_plot + proportional_plot +
     plot.caption = element_text(size = 10)  # Optional, if you want to adjust the caption size
   )
 
-# Print the combined plot
-combined_plot
+# Save the plot
+ggsave("school_distrib_combined_plot.png", plot = school_distrib_combined_plot, 
+       width = 14, height = 9, dpi = 300, units = "in")
 
-#Please view graph in full screen
+# Open a new graphics window to display graph
+dev.new(width = 14, height = 9)
+print(school_distrib_combined_plot)
 ```
 
 ------------------------------------------------------
 
-#3. Average doctoral degrees by research tier (2020–2023)
-By Lily Gates
+## 3. Average doctoral degrees by research tier (2020–2023)
+### By Lily Gates
 
 This boxplot with beeswarm displays the distribution of average doctoral degrees awarded from 2020 to 2023 across three research activity designations: "Research Colleges and Universities," "Research 1 (R1)," and "Research 2 (R2)." The x-axis represents the average number of doctoral degrees awarded, while the y-axis categorizes institutions by their research tier. 
 
@@ -681,70 +518,68 @@ clean_df <- combined_df_na %>%
   )
 
 # Create boxplot with beeswarm overlay
-ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025)) +
-  geom_boxplot(fill = "slateblue", alpha = 0.5, outlier.shape = NA) +
-  geom_beeswarm(color = "darkslateblue", alpha = 0.8, size = 0.7, cex = 1.2) +
+boxplot_avg_degrees <- ggplot(clean_df, aes(x = avg_num_doc_degrees_2020_2023, y = research_tier_2025)) +
+  geom_boxplot(fill = "slateblue", alpha = 0.5, outlier.shape = NA, size = 1.5) +
+  geom_beeswarm(color = "darkslateblue", alpha = 0.8, size = 2.2, cex = 2) +
   scale_x_log10() +
   # Customize Appearance
   labs(
-    title = "Average doctoral degrees by research tier",
-    subtitle = "Distribution of average doctoral degrees conferred by RCU, R1, and R2 institutions from 2020 to 2023",
+    title = "Average doctoral degrees by research tier (2020–2023)",
+    subtitle = "Distribution of average doctoral degrees conferred by RCU, R1, and R2 institutions",
     x = "Average doctoral degrees (log scale)",
     y = "",
     caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
   ) +
   my_plot_theme
+
+#boxplot_avg_degrees
+
+# Save the plot
+ggsave("boxplot_avg_degrees.png", plot = boxplot_avg_degrees, 
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Open a new graphics window to display graph
+dev.new(width = 14, height = 9)
+print(boxplot_avg_degrees)
 ```
 
 ------------------------------------------------------
 
-#4. Doctoral degrees conferred by research tier and academic year (2020–2023)
-By Lily Gates
+## 4. Doctoral degrees conferred by research tier and academic year (2020–2023)
+### By Lily Gates
 
 This stacked bar graph visualizes the count of doctoral degrees conferred across different academic years (2020–2023), broken down by research tier. The research tiers are represented by three categories: "Research Colleges and Universities" (RCU), "Research 1 (R1)," and "Research 2 (R2)." The bars for each academic year are stacked to show the distribution of doctoral degrees within each research tier, providing insight into how the number of degrees varies across tiers and over time. The y-axis represents the raw count of doctoral degrees, and the x-axis represents the academic years.
 
 The most noticeable trend is the gradual increase in the number of doctoral degrees conferred by R1 institutions, especially between the academic years 2020–2021 and 2021–2022. This increase is likely attributed to the effects of the COVID-19 pandemic, which may have led to shifts in research priorities and funding. There is also a slight increase in R2 degrees, but this change is less pronounced. RCU institutions, on the other hand, have such a small number of degrees to begin with that any change is difficult to discern.
 
 ```{r}
-# Reshape the data into long format for easier plotting and drop NA values
-long_combined_df <- combined_df_na_cleaned %>%
-  select(
-    research_tier_2025,
-    num_doc_degrees_2020_2021,
-    num_doc_degrees_2021_2022,
-    num_doc_degrees_2022_2023
-  ) %>%
+unique(combined_df_na$research_tier_2025)
+```
+
+
+```{r}
+doctoral_degrees_by_year <- combined_df_na %>%
+  select(research_tier_2025, num_doc_degrees_2020_2021, num_doc_degrees_2021_2022, num_doc_degrees_2022_2023) %>%
   pivot_longer(
-    cols = c(
-      "num_doc_degrees_2020_2021",
-      "num_doc_degrees_2021_2022",
-      "num_doc_degrees_2022_2023"
-    ),
+    cols = starts_with("num_doc_degrees"),
     names_to = "academic_year",
     values_to = "num_doc_degrees"
   ) %>%
-  # Clean up the research tier labels and academic year labels
+  filter(!is.na(num_doc_degrees), !is.na(research_tier_2025)) %>%
   mutate(
-    research_tier_2025 = recode(
-      research_tier_2025, 
-      "Research 1: Very High Research Spending and Doctorate Production" = "Research 1", 
-      "Research 2: High Research Spending and Doctorate Production" = "Research 2",
-      "Research Colleges and Universities" = "Research Colleges and Universities"
-    ),
     academic_year = recode(
       academic_year,
-      "num_doc_degrees_2020_2021" = "2020-2021",
-      "num_doc_degrees_2021_2022" = "2021-2022",
-      "num_doc_degrees_2022_2023" = "2022-2023"
+      num_doc_degrees_2020_2021 = "2020–2021",
+      num_doc_degrees_2021_2022 = "2021–2022",
+      num_doc_degrees_2022_2023 = "2022–2023"
+    ),
+    academic_year = factor(
+      academic_year,
+      levels = c("2020–2021", "2021–2022", "2022–2023")
     )
-  ) %>%
-  # Filter out any rows with NA values in num_doc_degrees or research_tier_2025
-  filter(!is.na(num_doc_degrees), !is.na(research_tier_2025))
-```
+  )
 
-```{r}
-# Create a stacked bar graph of doctoral degrees by research tier and academic year
-ggplot(long_combined_df, aes(x = academic_year, y = num_doc_degrees, fill = research_tier_2025)) +
+stacked_bar_avg_degrees <- ggplot(doctoral_degrees_by_year, aes(x = academic_year, y = num_doc_degrees, fill = research_tier_2025)) +
   geom_bar(stat = "identity", position = "stack") +
   labs(
     title = "Doctoral degrees conferred by research tier and academic year (2020–2023)",
@@ -761,26 +596,34 @@ ggplot(long_combined_df, aes(x = academic_year, y = num_doc_degrees, fill = rese
     plot.caption = element_text(hjust = 0, size = 9, color = "gray30"),
     legend.position = "right",  # Keep the legend on the right
     legend.box = "vertical",
-  panel.grid.major = element_blank()
-
+    panel.grid.major = element_blank()
   ) +
   guides(
     fill = guide_legend(ncol = 1)  # Set the legend to 1 column
   ) +
   scale_fill_manual(
-    values = c("Research 1" = "#4C79A1", "Research 2" = "#F1A340", "Research Colleges and Universities" = "#6D9D4B"),  # New colors
+    values = c("Research 1: Very High Research Spending and Doctorate Production" = "#4C79A1", "Research 2: High Research Spending and Doctorate Production" = "#F1A340", "Research Colleges and Universities" = "#6D9D4B"),  # New colors
     labels = c("R1", "R2", "RCU")  # Set the legend labels
   ) +
   scale_y_continuous(
-    labels = scales::comma  # Adds commas to the y-axis labels for better readability
+    labels = scales::comma,  # Adds commas to the y-axis labels for better readability
+    expand = c(0, 0)  # Ensure y-axis starts at 0, with no padding
   )
+
+# Save the plot
+ggsave("stacked_bar_avg_degrees.png", plot = stacked_bar_avg_degrees, 
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Open a new graphics window to display the graph
+dev.new(width = 14, height = 9)
+print(stacked_bar_avg_degrees)
 
 ```
 
 ------------------------------------------------------
 
-#5. Count of institutions by research activity designation and institution type (2025)
-by Lily Gates
+## 5. Count of institutions by research activity designation and institution type (2025)
+### By Lily Gates
 
 This grouped bar graph displays the count of institutions by their type (public, private non-profit, and private for-profit) and their research activity designation (R1, R2, and Research Colleges and Universities) for the year 2025. They represent the same data, but the color-fill and x-axis variables are the opposite on both graphs.
 
@@ -794,19 +637,24 @@ This analysis highlights key trends in how research activity designation relates
 
 ```{r}
 # Create plot with text labels on top of bars
-ggplot(plot_df_clean, aes(x = public_private_profit, y = n, fill = research_tier_2025)) +
+# Drop NA values from the data
+plot_df_clean <- combined_df_na_cleaned %>%
+  count(public_private_profit, research_tier_2025, name = "n") %>%
+  na.omit()  # Remove rows with NA values
+
+grouped_bar_school_count <- ggplot(plot_df_clean, aes(x = public_private_profit, y = n, fill = research_tier_2025)) +
   geom_bar(position = "dodge", stat = "identity", width = 0.8) +  # Adjust width for clarity
   geom_text(
     aes(label = n),            # Add labels with the count
     position = position_dodge(width = 0.8),   # Align text with bars
     vjust = -0.5,              # Adjust vertical position of labels above bars
-    size = 3.5,                  # Set label text size
+    size = 6,                  # Set label text size
     color = "black",
-    fontface = "bold",
+    fontface = "bold"
   ) +
   labs(
     title = "Count of institutions by research activity designation and institution type (2025)",
-    subtitle = "Institution type (Private for-profit, Private non-profit, Public), color-coded by research tier (R1, R2, RCU)",
+    subtitle = "Distribution of institutions by type and research tier, distinguished by color",
     x = "",
     y = "Count of institutions",
     fill = "",
@@ -835,84 +683,36 @@ ggplot(plot_df_clean, aes(x = public_private_profit, y = n, fill = research_tier
     )
   ) +
   theme(
-    axis.text.y = element_text(size = 10),
-    axis.text.x = element_text(angle = 0, hjust = 0.5),
     legend.position = "bottom",
     legend.box = "horizontal",
     legend.title = element_text(size = 12)
   )
 
+#grouped_bar_school_count
+
+# Save the plot
+ggsave("grouped_bar_school_count.png", plot = grouped_bar_school_count, 
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Open a new graphics window to display graph
+dev.new(width = 14, height = 9)
+print(grouped_bar_school_count)
 ```
 
 ------------------------------------------------------
 
-# 6. Distribution of Spending for Fiscal Year 2022
-By Colin Thompson
+## 6. Higher Education Research and Development (HERD) spending by fiscal year and research tier
+### By Lily Gates
 
-This histogram with a density curve displays the distribution of Higher Education Research and Development (HERD) spending across three fiscal years: 2021, 2022, and 2023. It highlights the range of research spending institutions report, with the peak around 0.05 billion dollars in fiscal year 2023, suggesting that many institutions are clustered in this spending range. Over the years, spending has gradually increased, especially in FY2023, indicating a growing trend in research investment. By examining this distribution, we can identify the most common spending ranges, which can help provide insight into what is considered typical or desirable for research spending. The graph also reveals the highest amounts of spending, useful for understanding the research budgets of institutions with the largest research investments.
-
-```{r}
-combined_df_long <- combined_df_na_cleaned %>%
-  select(research_tier_2025, herd_fy21, herd_fy22, herd_fy23) %>%
-  pivot_longer(
-    cols = starts_with("herd_fy"),
-    names_to = "fiscal_year",
-    values_to = "herd_spending"
-  ) %>%
-  filter(!is.na(herd_spending)) %>%
-  mutate(
-    fiscal_year = recode(
-      fiscal_year,
-      herd_fy21 = "FY 2021",
-      herd_fy22 = "FY 2022",
-      herd_fy23 = "FY 2023"
-    )
-  )
-
-combined_df_long_cleaned <- combined_df_long %>%
-  filter(herd_spending > 0)  # Remove rows with non-positive spending
-
-# Plot with the cleaned data
-ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
-  geom_histogram(aes(y = ..density..), bins = 20, color = "black", fill = viridis(1, option = "D"), alpha = 0.7, size = 0.3) +
-  geom_density(color = viridis(1, option = "C"), size = 1, linetype = "solid") +
-  scale_x_log10(labels = scales::dollar_format(scale = 1e-9, suffix = "B")) +
-  facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) +  # Arrange FY21, FY22, FY23 side by side
-  labs(
-    title = "Distribution of Spending in Higher Education Research and Development (HERD)",
-    x = "HERD Spending (Log Scale, in Billions)",
-    y = "Density",
-    caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
-  ) +
-  my_plot_theme +
-  theme(
-    plot.title = element_text(hjust = 0, face = "bold"),
-    strip.text = element_text(face = "bold"),
-    legend.position = "none",
-    panel.grid.major = element_blank()
-  )
-p <- ggplot(mtcars, aes(x = mpg, y = wt, color = factor(cyl))) +
-  geom_point(size = 4)
-colorblindr::cvd_grid(p)
-
-
-```
-
-
-------------------------------------------------------
-
-# 7.Higher Education Research and Development (HERD) Spending by Fiscal Year and Research Tier
-By Lily Gates
-
-This histogram displays Higher Education Research and Development (HERD) spending across three types of institutions for fiscal years 2021, 2022, and 2023:
+This density plot displays Higher Education Research and Development (HERD) spending across three types of institutions for fiscal years 2021, 2022, and 2023:
 
 The log scale on the x-axis highlights differences in spending, particularly at the higher end. The overlap between R2 and the other categories suggests that some R2 institutions have spending comparable to R1 or R Colleges.
 
-```{r}
 
-# Clean and reshape data
+```{r}
 combined_df_long <- combined_df_na_cleaned %>%
   select(research_tier_2025, herd_fy21, herd_fy22, herd_fy23) %>%
+  mutate(across(starts_with("herd_fy"), ~ as.numeric(gsub(",", "", .)))) %>%  # Convert all HERD columns to numeric
   pivot_longer(
     cols = starts_with("herd_fy"),
     names_to = "fiscal_year",
@@ -942,16 +742,27 @@ color_mapping <- c(
   "RCU" = "#009E73"  # green
 )
 
+
 # Plot
-ggplot(combined_df_long, aes(x = herd_spending, color = research_tier_simple, fill = research_tier_simple)) +
+herd_density <- ggplot(combined_df_long, aes(x = herd_spending, color = research_tier_simple, fill = research_tier_simple)) +
   geom_density(alpha = 0.3, size = .8) +
   scale_x_log10(labels = dollar_format(scale = 1e-9, suffix = "B")) +
+  scale_y_continuous(expand = c(0, 0)) +
   facet_wrap(~ fiscal_year, nrow = 1) +
   scale_color_manual(values = color_mapping) +
   scale_fill_manual(values = color_mapping) +
+
+# Plot with the cleaned data
+ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
+  geom_histogram(aes(y = ..density..), bins = 20, color = "black", fill = viridis(1, option = "D"), alpha = 0.7, size = 0.3) +
+  geom_density(color = viridis(1, option = "C"), size = 1, linetype = "solid") +
+  scale_x_log10(labels = scales::dollar_format(scale = 1e-9, suffix = "B")) +
+  facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) +  # Arrange FY21, FY22, FY23 side by side
+
   labs(
-    title = "Higher Education Research and Development (HERD)\nSpending by Fiscal Year and Research Tier",
+    title = "Higher Education Research and Development (HERD) spending by fiscal year and research tier",
     x = "HERD Spending (Log Scale, in Billions)",
+    subtitle = "Density plot with log scale highlights skewed distribution and overlaps across tiers",
     y = "Density",
     color = "",
     fill = "",
@@ -959,22 +770,102 @@ ggplot(combined_df_long, aes(x = herd_spending, color = research_tier_simple, fi
   ) +
   my_plot_theme +
   theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
-    plot.subtitle = element_text(hjust = 0.5),
-    plot.caption = element_text(hjust = 0, size = 9),
-    strip.text = element_text(face = "bold"),
     legend.position = "bottom",
     legend.direction = "horizontal",
     panel.grid.major = element_blank()
   )
+p <- ggplot(mtcars, aes(x = mpg, y = wt, color = factor(cyl))) +
+  geom_point(size = 4)
+colorblindr::cvd_grid(p)
 
+#herd_density
+
+# Save Graph
+ggsave("herd_density.png", plot = herd_density, 
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Open a new graphics window to display graph
+dev.new(width = 14, height = 9)
+print(herd_density)
 ```
 
 ------------------------------------------------------
 
-# 8. Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
-By Mia Leandri
+## 7. Distribution of Higher Education Research and Development (HERD) spending
+### By Colin Thompson and Lily Gates
 
+This histogram with a density curve displays the distribution of Higher Education Research and Development (HERD) spending across three fiscal years: 2021, 2022, and 2023. It highlights the range of research spending institutions report, with the peak around 0.05 billion dollars in fiscal year 2023, suggesting that many institutions are clustered in this spending range. Over the years, spending has gradually increased, especially in FY2023, indicating a growing trend in research investment. By examining this distribution, we can identify the most common spending ranges, which can help provide insight into what is considered typical or desirable for research spending. The graph also reveals the highest amounts of spending, useful for understanding the research budgets of institutions with the largest research investments.
+
+```{r}
+# Prepare the data
+combined_df_long <- combined_df_na_cleaned %>%
+  select(research_tier_2025, herd_fy21, herd_fy22, herd_fy23) %>%
+  mutate(across(starts_with("herd_fy"), ~ as.numeric(gsub(",", "", .)))) %>%  # Remove commas and convert to numeric
+  pivot_longer(
+    cols = starts_with("herd_fy"),
+    names_to = "fiscal_year",
+    values_to = "herd_spending"
+  ) %>%
+  filter(!is.na(herd_spending)) %>%
+  mutate(
+    fiscal_year = recode(
+      fiscal_year,
+      herd_fy21 = "FY 2021",
+      herd_fy22 = "FY 2022",
+      herd_fy23 = "FY 2023"
+    )
+  )
+
+combined_df_long_cleaned <- combined_df_long %>%
+  filter(herd_spending > 0)  # Remove rows with non-positive spending
+
+# Initial plot (used to calculate max density for buffer)
+herd_hist_base <- ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
+  geom_histogram(aes(y = ..density..), bins = 20, color = "black", fill = "steelblue", alpha = 0.5, size = 0.6) +
+  geom_density(color = "indianred", fill = "indianred", alpha = .1, size = 1.6, linetype = "solid") +
+  scale_x_log10(labels = dollar_format(scale = 1e-9, suffix = "B")) +
+  facet_wrap(~ fiscal_year, nrow = 1, ncol = 3)
+
+# Calculate max y value from density
+gg_data <- ggplot_build(herd_hist_base)
+max_density <- max(gg_data$data[[2]]$y, na.rm = TRUE)
+buffered_max <- max_density * 1.1  # Add 10% buffer
+
+# Final plot with y-axis buffer
+herd_hist <- ggplot(combined_df_long_cleaned, aes(x = herd_spending)) +
+  geom_histogram(aes(y = ..density..), bins = 20, color = "black", fill = "steelblue", alpha = 0.5, size = 0.6) +
+  geom_density(color = "indianred", fill = "indianred", alpha = .1, size = 1.6, linetype = "solid") +
+  scale_x_log10(labels = dollar_format(scale = 1e-9, suffix = "B")) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, buffered_max)) +
+  facet_wrap(~ fiscal_year, nrow = 1, ncol = 3) +  # Arrange FY21, FY22, FY23 side by side
+  labs(
+    title = "Distribution of Higher Education Research and Development (HERD) spending",
+    subtitle = "Displays the range and frequency of reported HERD spending across fiscal years 2021 to 2023",   
+    x = "HERD Spending (Log Scale, in Billions)",
+    y = "Density",
+    caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)"
+  ) +
+  my_plot_theme +
+  theme(
+    legend.position = "none",
+    panel.grid.major = element_blank()
+  )
+
+# Save Graph
+ggsave("herd_hist.png", plot = herd_hist, 
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Open a new graphics window to display graph
+dev.new(width = 14, height = 9)
+print(herd_hist)
+
+```
+
+
+------------------------------------------------------
+
+## 8. Positive correlation between average research spending and doctoral degrees (2020-2023)
+### By Mia Leandri
 
 This scatter plot visualizes the relationship between average research spending (from FY2021 to FY2023) and the average number of doctoral degrees awarded (2020–2023) across American higher education institutions.
 
@@ -982,103 +873,120 @@ The x-axis shows average research spending in U.S. dollars, while the y-axis ind
 
 This visualization supports the analytical research question by highlighting how non-financial institutional characteristics (like research tier) correlate with tangible research outcomes such as doctoral degree production.
 
-# Log Scale - Average Research Spending vs. Doctoral Degrees (2020–2023) by Research Tier
+Note: Equation is in a transformed log form to correspond with log-log transformation
 
-
-# Linear Regression with Confidence Interval
-Note: Curvature due to the log scaling
 ```{r}
-ggplot(clean_df_long_filtered, aes(
-  x = herd_avg_fy21_to_fy23_billions,
+# Create valid_data by filtering complete cases and recoding research tier
+# So it is able to be log transformed
+valid_data <- combined_df_na %>%
+  filter(
+    !is.na(herd_avg_fy21_to_fy23),
+    !is.na(avg_num_doc_degrees_2020_2023),
+    !is.na(research_tier_2025),
+    herd_avg_fy21_to_fy23 > 0,  # Filter out zero or negative values
+    avg_num_doc_degrees_2020_2023 > 0  # Ensure the dependent variable is positive before log transform
+  ) %>%
+  mutate(
+    research_tier_2025 = recode(
+      research_tier_2025,
+      "Research Colleges and Universities" = "RCU",
+      "Research 1: Very High Research Spending and Doctorate Production" = "R1",
+      "Research 2: High Research Spending and Doctorate Production" = "R2"
+    ),
+    research_tier_2025 = factor(research_tier_2025, levels = c("RCU", "R2", "R1"))
+  )
+
+# Check if there are any remaining NA or Infinite values
+summary(valid_data$herd_avg_fy21_to_fy23)
+summary(valid_data$avg_num_doc_degrees_2020_2023)
+any(is.na(valid_data$herd_avg_fy21_to_fy23))
+any(is.na(valid_data$avg_num_doc_degrees_2020_2023))
+any(is.infinite(valid_data$herd_avg_fy21_to_fy23))
+any(is.infinite(valid_data$avg_num_doc_degrees_2020_2023))
+
+# Fit linear model (log-log scale)
+lm_model <- lm(
+  log10(avg_num_doc_degrees_2020_2023) ~ log10(herd_avg_fy21_to_fy23),
+  data = valid_data
+)
+
+# Extract slope, intercept, and R²
+slope <- coef(lm_model)[2]
+intercept <- coef(lm_model)[1]
+r_squared <- summary(lm_model)$r.squared
+
+# Get axis limits
+x_limits <- range(valid_data$herd_avg_fy21_to_fy23, na.rm = TRUE)
+y_limits <- range(valid_data$avg_num_doc_degrees_2020_2023, na.rm = TRUE)
+x_max <- max(valid_data$herd_avg_fy21_to_fy23, na.rm = TRUE)
+y_min <- min(valid_data$avg_num_doc_degrees_2020_2023, na.rm = TRUE)
+
+# Define custom colors
+custom_colors <- c("RCU" = "#1f77b4", "R2" = "#2ca02c", "R1" = "#ff7f0e")
+
+# Plot
+scatter_corr_degrees_spending <- ggplot(valid_data, aes(
+  x = herd_avg_fy21_to_fy23,
   y = avg_num_doc_degrees_2020_2023,
   color = research_tier_2025
 )) +
-  # Scatter points
-  geom_point(alpha = 0.6, size = 1.2) +
+  geom_point(alpha = 0.6, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, color = "gray30", fill = "black", alpha = 0.3, size = 1) +
   scale_color_manual(
     values = custom_colors,
-    guide = guide_legend(override.aes = list(size = 4))
+    breaks = c("RCU", "R2", "R1"),
+    labels = c("RCU", "R2", "R1"),
+    guide = guide_legend(override.aes = list(size = 8))
   ) +
-
-  # Regression line (explicit x/y mapping)
-  geom_line(
-    data = clean_df_long_filtered,
-    aes(x = herd_avg_fy21_to_fy23_billions, y = predicted_line),
-    inherit.aes = FALSE,
-    color = "gray30",
-    size = 1
-  ) +
-
-  # Confidence ribbon (gray fill, no color mapping)
-  geom_ribbon(
-    data = clean_df_long_filtered,
-    aes(x = herd_avg_fy21_to_fy23_billions, ymin = ci_lower, ymax = ci_upper),
-    inherit.aes = FALSE,
-    fill = "black",
-    alpha = 0.3
-  ) +
-
-  # Upper CI dashed line
-  geom_line(
-    data = clean_df_long_filtered,
-    aes(x = herd_avg_fy21_to_fy23_billions, y = ci_upper),
-    inherit.aes = FALSE,
-    color = "gray30",
-    linetype = "dashed",
-    size = 0.3
-  ) +
-
-  # Lower CI dashed line
-  geom_line(
-    data = clean_df_long_filtered,
-    aes(x = herd_avg_fy21_to_fy23_billions, y = ci_lower),
-    inherit.aes = FALSE,
-    color = "gray30",
-    linetype = "dashed",
-    size = 0.3
-  ) +
-
-  # Axes
   scale_x_log10(
-    labels = scales::label_dollar(scale = 1, suffix = "B"),
-    breaks = scales::log_breaks()
+    limits = x_limits,
+    breaks = log_breaks(),
+    labels = label_dollar(scale = 1e-9, suffix = "B")
   ) +
   scale_y_log10(
-    breaks = scales::log_breaks(),
-    limits = c(1, NA)
+    limits = y_limits,
+    breaks = log_breaks()
   ) +
-
-  # Labels
   labs(
     title = "Positive Correlation Between Research Spending and Doctoral Degrees",
     subtitle = "Comparing average spending from 2020 to 2023",
-    x = "Avg. Research Spending\n(Log Scale, Billions USD)",
-    y = "Avg. Number of Doctoral Degrees\n(Log Scale)",
+    caption = "Note: 'Research Colleges and Universities' (RCU) are research-focused but do not meet R1 or R2 criteria for expenses and/or doctoral degrees conferred.\nData source: Carnegie Classification of Institutions of Higher Education (https://carnegieclassifications.acenet.edu)",
+    x = "Avg. Research Spending (Log Scale, Billions USD)",
+    y = "Avg. Number of Doctoral Degrees (Log Scale)",
     color = ""
   ) +
-
-  # Theme
   my_plot_theme +
- theme(
+  theme(
     legend.position = "bottom",
     legend.justification = "center",
     legend.box = "horizontal",
-    legend.margin = margin(t = 5),  # Adds space between plot and legend
-    plot.margin = margin(t = 10, r = 10, b = 10, l = 10)  # Optional: adjust bottom space
+    legend.margin = margin(t = 5),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
   ) +
-  #   # Use annotate() for the regression equation and R-squared annotation with an outline
   annotate(
-    "label", 
-    x = 0.15, 
-    y = 2, 
-    label = paste0("y = ", round(449.76, 2), "x + ", round(52.28, 2), "\nR² = ", round(0.85, 2)),
+    "label",
+    x = x_max,
+    y = y_min,
+    label = paste0(
+      "y = 10^", round(intercept, 2), " * x^", round(slope, 2),
+      "\nR² = ", round(r_squared, 2)
+    ),
     color = "black",
-    fill = alpha("white", 0.3),  # White background with 70% opacity
-    size = 5,
-    hjust = 0,
-    fontface = "italic",
-    label.size = 0.6,  # Outline size (change to control thickness)
-    label.padding = unit(0.45, "lines"),  # Adjust padding to add space around text
-    label.r = unit(0.4, "lines")  # Adjust the radius of the label corners
+    fill = alpha("white", 0.3),
+    size = 6,
+    hjust = 1,
+    vjust = 0,
+    fontface = "bold",
+    label.size = 1,
+    label.padding = unit(0.5, "lines"),
+    label.r = unit(0.4, "lines")
   )
+
+# Save the plot
+ggsave("scatter_corr_degrees_spending.png", plot = scatter_corr_degrees_spending,
+       width = 14, height = 9, dpi = 300, units = "in")
+
+# Display the plot
+dev.new(width = 14, height = 9)
+print(scatter_corr_degrees_spending)
 ```
